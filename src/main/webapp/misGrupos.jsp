@@ -1,0 +1,24 @@
+<%-- 
+    Document   : misGrupos
+    Created on : 11 mar. 2025, 20:06:30
+    Author     : Joan - Izz
+--%>
+
+<%@ include file="header.jsp" %>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<h2>Mis Grupos</h2>
+<div class="row">
+    <c:forEach var="grupo" items="${misGrupos}">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">${grupo.nombre}</h5>
+                    <p class="card-text">${grupo.descripcion}</p>
+                    <a href="miGrupo.jsp?id=${grupo.id}" class="btn btn-primary">Entrar</a>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+</div>
+<%@ include file="footer.jsp" %>
+
