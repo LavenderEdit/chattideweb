@@ -1,7 +1,16 @@
 package com.chattide.web.Service;
 
+import com.chattide.web.DTO.GrupoDTO;
+import com.chattide.web.Mapper.GrupoMapper;
 import com.chattide.web.Modelo.Grupo;
+import com.chattide.web.Persistence.GrupoJpaController;
+import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -9,29 +18,83 @@ import java.util.ArrayList;
  */
 public class GrupoService implements IGrupoService {
 
+    GrupoJpaController grupoJpaController;
+
+    public GrupoService(GrupoJpaController grupoJpaController) {
+        this.grupoJpaController = grupoJpaController;
+    }
+
     @Override
     public Grupo findById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return grupoJpaController.findGrupo(id);
     }
 
     @Override
     public ArrayList<Grupo> findAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ArrayList<Grupo> grupos = SvUtils.toArrayList(grupoJpaController.findGrupoEntities());
+        return grupos;
     }
 
     @Override
     public boolean create(Grupo entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            grupoJpaController.create(entity);
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(GrupoService.class.getName())
+                    .log(Level.SEVERE, "Error creando grupo", ex);
+            return false;
+        }
     }
 
     @Override
     public boolean update(Grupo entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            grupoJpaController.edit(entity);
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(GrupoService.class.getName())
+                    .log(Level.SEVERE, "Error actualizando grupo", ex);
+            return false;
+        }
     }
 
     @Override
     public void delete(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            grupoJpaController.destroy(id);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(GrupoService.class.getName())
+                    .log(Level.SEVERE, "Error borrando grupo", ex);
+        }
     }
-    
+
+    @Override
+    public List<GrupoDTO> findAllDTO() {
+        return findAll().stream()
+                .map(GrupoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GrupoDTO> findDTOsByUsuario(Long usuarioId) {
+        return grupoJpaController.findGrupoEntitiesByUsuario(usuarioId)
+                .stream()
+                .map(GrupoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<GrupoDTO> findAvailableDTOs(Long usuarioId) {
+        return grupoJpaController.findAvailableGrupoEntities(usuarioId)
+                .stream()
+                .map(GrupoMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public GrupoDTO findDTOById(Long id) {
+        Grupo g = findById(id);
+        return g != null ? GrupoMapper.toDTO(g) : null;
+    }
 }
