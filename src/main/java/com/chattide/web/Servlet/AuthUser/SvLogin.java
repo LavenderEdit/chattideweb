@@ -4,6 +4,7 @@ import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import com.chattide.web.Utilities.Mensajes;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @WebServlet(name = "SvLogin", urlPatterns = {"/SvLogin"})
 public class SvLogin extends HttpServlet {
 
+    @Inject
     UsuarioService us;
 
     @Override

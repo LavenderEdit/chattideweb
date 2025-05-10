@@ -3,6 +3,7 @@ package com.chattide.web.Servlet.AuthUser;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -24,6 +25,7 @@ import jakarta.servlet.http.Part;
 )
 public class SvRegistro extends HttpServlet {
 
+    @Inject
     UsuarioService us;
 
     @Override
