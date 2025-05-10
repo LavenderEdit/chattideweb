@@ -50,6 +50,10 @@ public class Grupo implements Serializable {
     public Grupo() {
     }
 
+    public Grupo(long grupoID) {
+        this.grupoID = grupoID;
+    }
+
     public Grupo(long grupoID, String nombre, String descripcionText, Enum.TipoPrivacidad tipoPrivacidad, List<Usuario_Grupo> listaGrupoUsuario, List<Publicacion> listaPublicacion) {
         this.grupoID = grupoID;
         this.nombre = nombre;
