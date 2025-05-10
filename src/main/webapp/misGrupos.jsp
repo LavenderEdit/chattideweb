@@ -1,7 +1,7 @@
 <%-- 
     Document   : misGrupos
     Created on : 11 mar. 2025, 20:06:30
-    Author     : Joan - Izz
+    Author     : Juan - Luis
 --%>
 
 <%@ include file="header.jsp" %>
