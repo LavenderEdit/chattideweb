@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class UsuarioService implements IUsuarioService {
 
     @Inject
-    private UsuarioJpaController usuarioJpaController;
+    UsuarioJpaController usuarioJpaController;
 
     public UsuarioService() {
         this.usuarioJpaController = new UsuarioJpaController();
