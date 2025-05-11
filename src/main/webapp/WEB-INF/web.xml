@@ -4,9 +4,41 @@
         <servlet-name>SvRegistro</servlet-name>
         <servlet-class>com.chattide.web.Servlet.AuthUser.SvRegistro</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SvLogin</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.AuthUser.SvLogin</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvCrearGrupo</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.GestGrup.SvCrearGrupo</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvBuscarGrupos</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.GestGrup.SvBuscarGrupos</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvMisGrupos</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.GestGrup.SvMisGrupos</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SvRegistro</servlet-name>
         <url-pattern>/SvRegistro</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvLogin</servlet-name>
+        <url-pattern>/SvLogin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvCrearGrupo</servlet-name>
+        <url-pattern>/SvCrearGrupo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvBuscarGrupos</servlet-name>
+        <url-pattern>/SvBuscarGrupos</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvMisGrupos</servlet-name>
+        <url-pattern>/SvMisGrupos</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
