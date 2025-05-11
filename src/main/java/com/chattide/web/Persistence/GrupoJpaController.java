@@ -226,8 +226,11 @@ public class GrupoJpaController extends AbstractJpaController implements Seriali
         var em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT g FROM Grupo g JOIN g.listaGrupoUsuario ug "
-                    + "WHERE ug.usuario.usuarioID = :uid", Grupo.class)
+                    "SELECT g FROM Grupo g "
+                    + "JOIN g.listaGrupoUsuario ug "
+                    + "WHERE ug.usuario_grupo.usuarioID = :uid",
+                    Grupo.class
+            )
                     .setParameter("uid", usuarioId)
                     .getResultList();
         } finally {
@@ -240,8 +243,12 @@ public class GrupoJpaController extends AbstractJpaController implements Seriali
         try {
             return em.createQuery(
                     "SELECT g FROM Grupo g WHERE g.grupoID NOT IN ("
-                    + "SELECT ug.grupo.grupoID FROM Usuario_Grupo ug "
-                    + "WHERE ug.usuario.usuarioID = :uid)", Grupo.class)
+                    + "  SELECT ug.grupo_usuario.grupoID "
+                    + "  FROM Usuario_Grupo ug "
+                    + "  WHERE ug.usuario_grupo.usuarioID = :uid"
+                    + ")",
+                    Grupo.class
+            )
                     .setParameter("uid", usuarioId)
                     .getResultList();
         } finally {
