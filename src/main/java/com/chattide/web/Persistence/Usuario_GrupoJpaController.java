@@ -179,4 +179,49 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         }
     }
 
+    public Usuario_Grupo findByUserAndGroup(Long uid, Long gid) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT ug FROM Usuario_Grupo ug "
+                    + "WHERE ug.usuario_grupo.usuarioID = :uid "
+                    + "  AND ug.grupo_usuario.grupoID   = :gid",
+                    Usuario_Grupo.class)
+                    .setParameter("uid", uid)
+                    .setParameter("gid", gid)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Usuario_Grupo> findByUsuario(Long uid) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT ug FROM Usuario_Grupo ug "
+                    + "WHERE ug.usuario_grupo.usuarioID = :uid",
+                    Usuario_Grupo.class)
+                    .setParameter("uid", uid)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Usuario_Grupo> findByGrupo(Long gid) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT ug FROM Usuario_Grupo ug "
+                    + "WHERE ug.grupo_usuario.grupoID = :gid",
+                    Usuario_Grupo.class)
+                    .setParameter("gid", gid)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
