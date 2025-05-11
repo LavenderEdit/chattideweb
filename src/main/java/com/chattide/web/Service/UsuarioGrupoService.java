@@ -1,7 +1,12 @@
 package com.chattide.web.Service;
 
 import com.chattide.web.Modelo.Usuario_Grupo;
-import java.util.ArrayList;
+import com.chattide.web.Persistence.Usuario_GrupoJpaController;
+import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
+import jakarta.inject.Inject;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -9,28 +14,56 @@ import java.util.ArrayList;
  */
 public class UsuarioGrupoService implements IUsuarioGrupoService {
 
-    @Override
-    public Usuario_Grupo findById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    @Inject
+    Usuario_GrupoJpaController ugc;
+
+    public UsuarioGrupoService() {
+        this.ugc = new Usuario_GrupoJpaController();
     }
 
     @Override
-    public ArrayList<Usuario_Grupo> findAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean joinGroup(Long usuarioId, Long grupoId) {
+        try {
+            Usuario_Grupo ug = new Usuario_Grupo();
+            ug.setUsuario_grupo(new com.chattide.web.Modelo.Usuario(usuarioId));
+            ug.setGrupo_usuario(new com.chattide.web.Modelo.Grupo(grupoId));
+            ugc.create(ug);
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(UsuarioGrupoService.class.getName())
+                    .log(Level.SEVERE, "Error uniendo usuario a grupo", ex);
+            return false;
+        }
     }
 
     @Override
-    public boolean create(Usuario_Grupo entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean leaveGroup(Long usuarioId, Long grupoId) {
+        try {
+            Usuario_Grupo ug = ugc.findByUserAndGroup(usuarioId, grupoId);
+            if (ug == null) {
+                return false;
+            }
+            ugc.destroy(ug.getUsuarioGrupoID());
+            return true;
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(UsuarioGrupoService.class.getName())
+                    .log(Level.SEVERE, "Error saliendo del grupo", ex);
+            return false;
+        }
     }
 
     @Override
-    public boolean update(Usuario_Grupo entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Usuario_Grupo> findByUsuario(Long usuarioId) {
+        return ugc.findByUsuario(usuarioId);
     }
 
     @Override
-    public void delete(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Usuario_Grupo> findByGrupo(Long grupoId) {
+        return ugc.findByGrupo(grupoId);
+    }
+
+    @Override
+    public boolean isMember(Long usuarioId, Long grupoId) {
+        return ugc.findByUserAndGroup(usuarioId, grupoId) != null;
     }
 }
