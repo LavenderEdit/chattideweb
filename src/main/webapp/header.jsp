@@ -27,7 +27,7 @@
                         <%-- Si el usuario ha iniciado sesión, mostramos opciones de usuario; de lo contrario, opciones de login/registro --%>
                         <% if (session.getAttribute("usuario") != null) { %>
                         <li class="nav-item"><a class="nav-link" href="miCuenta.jsp">Mi Cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link" href="misGrupos.jsp">Mis Grupos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/SvMisGrupos">Mis Grupos</a></li>
                         <li class="nav-item"><a class="nav-link" href="logout.jsp">Cerrar Sesión</a></li>
                             <% } else { %>
                         <li class="nav-item"><a class="nav-link" href="login.jsp">Iniciar Sesión</a></li>

@@ -14,7 +14,7 @@
                 <div class="card-body">
                     <h5 class="card-title">${grupo.nombre}</h5>
                     <p class="card-text">${grupo.descripcion}</p>
-                    <a href="unirseGrupo.jsp?id=${grupo.id}" class="btn btn-primary">Unirse</a>
+                    <a href="${pageContext.request.contextPath}/SvUnirseGrupo?id=${grupo.id}" class="btn btn-primary">Unirse</a>
                 </div>
             </div>
         </div>

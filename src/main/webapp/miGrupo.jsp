@@ -10,8 +10,13 @@
     <div class="col-md-8">
         <h2>${grupo.nombre}</h2>
         <p>${grupo.descripcion}</p>
+        <!-- NUEVO: botón salir grupo -->
+        <button class="btn btn-outline-danger mb-4"
+                onclick="salirGrupoDetalles(${grupo.id})">
+            Salir del grupo
+        </button>
         <!-- Formulario para nueva publicación -->
-        <form action="PublicarServlet" method="post" class="mb-4">
+        <form action="${pageContext.request.contextPath}/SvPublicar" method="post" class="mb-4">
             <div class="mb-3">
                 <textarea class="form-control" name="contenido" placeholder="Escribe tu publicación..." required></textarea>
             </div>
@@ -25,7 +30,7 @@
                     <p>${publicacion.contenido}</p>
                     <small class="text-muted">Publicado por ${publicacion.usuarioNombre} el ${publicacion.fecha_publicacion}</small>
                     <div class="mt-2">
-                        <a href="publicacion.jsp?id=${publicacion.id}" class="btn btn-link">Ver Detalles</a>
+                        <a href="${pageContext.request.contextPath}/SvPublicacion?id=${publicacion.id}" class="btn btn-link">Ver Detalles</a>
                         <button class="btn btn-outline-primary btn-sm" onclick="darLike(${publicacion.id})">
                             Me gusta (<span id="likeCount${publicacion.id}">${publicacion.likeCount}</span>)
                         </button>
