@@ -1,37 +1,74 @@
 package com.chattide.web.Service;
 
 import com.chattide.web.Modelo.Publicacion;
+import com.chattide.web.Persistence.PublicacionJpaController;
+import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Juan - Luis
  */
+@Named
 public class PublicacionService implements IPublicacionService {
+
+    @Inject
+    PublicacionJpaController publicacionJpaController;
+
+    public PublicacionService() {
+        this.publicacionJpaController = new PublicacionJpaController();
+    }
 
     @Override
     public Publicacion findById(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return publicacionJpaController.findPublicacion(id);
     }
 
     @Override
     public ArrayList<Publicacion> findAll() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<Publicacion> listaPubli = publicacionJpaController.findPublicacionEntities();
+        ArrayList<Publicacion> lista = SvUtils.toArrayList(listaPubli);
+        return lista;
     }
 
     @Override
     public boolean create(Publicacion entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            publicacionJpaController.create(entity);
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(PublicacionService.class.getName())
+                    .log(Level.SEVERE, "Error creando Publicación", ex);
+            return false;
+        }
     }
 
     @Override
     public boolean update(Publicacion entity) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            publicacionJpaController.edit(entity);
+            return true;
+        } catch (Exception ex) {
+            Logger.getLogger(PublicacionService.class.getName())
+                    .log(Level.SEVERE, "Error actualizando Publicación", ex);
+            return false;
+        }
     }
 
     @Override
     public void delete(Long id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            publicacionJpaController.destroy(id);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(PublicacionService.class.getName())
+                    .log(Level.SEVERE, "Error borrando Publicación", ex);
+        }
     }
 
 }
