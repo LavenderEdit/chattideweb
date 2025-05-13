@@ -5,17 +5,16 @@
 --%>
 
 <%@ include file="header.jsp" %>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <div class="row">
     <div class="col-md-8">
         <h2>${grupo.nombre}</h2>
         <p>${grupo.descripcion}</p>
-        <!-- NUEVO: botón salir grupo -->
-        <button class="btn btn-outline-danger mb-4"
-                onclick="salirGrupoDetalles(${grupo.id})">
-            Salir del grupo
+        <button type="button" 
+                class="btn btn-outline-danger mb-4 exit-group-btn"
+                data-group-id="${grupo.id}"
+                title="Salir del grupo">
+            <i class="fas fa-sign-out-alt"></i>
         </button>
-        <!-- Formulario para nueva publicación -->
         <form action="${pageContext.request.contextPath}/SvPublicar" method="post" class="mb-4">
             <div class="mb-3">
                 <textarea class="form-control" name="contenido" placeholder="Escribe tu publicación..." required></textarea>
@@ -23,7 +22,6 @@
             <input type="hidden" name="idGrupo" value="${grupo.id}">
             <button type="submit" class="btn btn-primary">Publicar</button>
         </form>
-        <!-- Listado de publicaciones -->
         <c:forEach var="publicacion" items="${listaPublicaciones}">
             <div class="card mb-3">
                 <div class="card-body">
@@ -42,9 +40,12 @@
     <div class="col-md-4">
         <h3>Miembros</h3>
         <ul class="list-group">
-            <c:forEach var="miembro" items="${listaMiembros}">
-                <li class="list-group-item">${miembro.nombre}</li>
-                </c:forEach>
+            <c:forEach var="miembro" items="${miembros}">
+                <div class="miembro">
+                    <img src="${pageContext.request.contextPath}/${miembro.avatar}" alt="${miembro.nombre}" width="50" height="50" />
+                    <p>${miembro.nombre} (${miembro.email})</p>
+                </div>
+            </c:forEach>
         </ul>
     </div>
 </div>
