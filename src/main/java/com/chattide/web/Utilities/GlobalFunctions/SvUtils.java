@@ -71,7 +71,7 @@ public class SvUtils {
     /* Métodos para las clases */
     public static String guardarArchivo(HttpServletRequest request, Part filePart, String carpetaDestino) throws IOException {
         if (filePart == null || filePart.getSize() <= 0) {
-            return "images/Usuario/defaultUserAvatar.webp";
+            return "images/Usuario/DefaultUserAvatar.webp";
         }
 
         String uploadPath = request.getServletContext().getRealPath("") + File.separator + carpetaDestino;
