@@ -1,40 +1,110 @@
-<%-- 
-    Document   : header
-    Created on : 10 mayo 2025, 14:04:35
-    Author     : Joan - Izz
---%>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page session="true" %>
 <!DOCTYPE html>
 <html lang="es">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <meta name="description" content="Chattide es una red social moderna y dinámica que te conecta a través de grupos de interés, publicaciones interactivas y comentarios en tiempo real. Disfruta de una experiencia intuitiva, diseño responsive y actualizaciones fluidas con AJAX, en un entorno seguro y fácil de usar.">
+        <meta charset="UTF-8">
+        <meta name="description" content="Chattide es una red social moderna...">
         <title>Chattide</title>
-        <link rel="shortcut icon" href="<%=request.getContextPath()%>/images/Logos/Logo-Chattide-FondoClaro.ico" type="image/x-icon"/>
-        <link rel="stylesheet" href="<%=request.getContextPath()%>/css/bootstrap/bootstrap.min.css" crossorigin="anonymous">
-        <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main-style.css"/>
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/Logos/Logo-Chattide-FondoClaro.ico"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css">
     </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <body data-context-path="${pageContext.request.contextPath}">
+        <script>
+            window.APP_CONTEXT_PATH = document.body.dataset.contextPath;
+        </script>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="index.jsp">Chattide</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/index.jsp">
+                    Chattide
+                </a>
+                <button class="navbar-toggler" type="button"
+                        data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <%-- Si el usuario ha iniciado sesión, mostramos opciones de usuario; de lo contrario, opciones de login/registro --%>
-                        <% if (session.getAttribute("usuario") != null) { %>
-                        <li class="nav-item"><a class="nav-link" href="miCuenta.jsp">Mi Cuenta</a></li>
-                        <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/SvMisGrupos">Mis Grupos</a></li>
-                        <li class="nav-item"><a class="nav-link" href="logout.jsp">Cerrar Sesión</a></li>
-                            <% } else { %>
-                        <li class="nav-item"><a class="nav-link" href="login.jsp">Iniciar Sesión</a></li>
-                        <li class="nav-item"><a class="nav-link" href="registro.jsp">Registrarse</a></li>
-                            <% }%>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav ms-auto align-items-center">
+
+                        <%-- Si no hay usuario logeado --%>
+                        <c:if test="${empty sessionScope.usuario}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/login.jsp">
+                                    Iniciar Sesión
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/registro.jsp">
+                                    Registrarse
+                                </a>
+                            </li>
+                        </c:if>
+
+                        <%-- Si hay usuario logeado --%>
+                        <c:if test="${not empty sessionScope.usuario}">
+                            <%-- Dropdown de Grupos --%>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="groupsDropdown"
+                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Grupos
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="groupsDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="${pageContext.request.contextPath}/SvMisGrupos">
+                                            Mis Grupos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="${pageContext.request.contextPath}/SvBuscarGrupos">
+                                            Buscar Grupos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="${pageContext.request.contextPath}/crearGrupo.jsp">
+                                            Crear Grupo
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <%-- Perfil de usuario con dropdown --%>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center"
+                                   href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
+                                         alt="Avatar" class="rounded-circle me-2" width="30" height="30">
+                                    ${sessionScope.usuario.nombre}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="${pageContext.request.contextPath}/miCuenta.jsp">
+                                            Mi Cuenta
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                           href="${pageContext.request.contextPath}/logout.jsp">
+                                            Cerrar Sesión
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </c:if>
+
                     </ul>
                 </div>
             </div>
         </nav>
+
         <div class="container mt-4">
