@@ -3,8 +3,13 @@
     Created on : 10 mayo 2025, 20:05:06
     Author     : Juan - Luis
 --%>
-
 <%@ include file="header.jsp" %>
+<%
+    if (session.getAttribute("usuario") != null) {
+        response.sendRedirect(request.getContextPath() + "/SvMisGrupos");
+        return;
+    }
+%>
 <div class="text-center py-5">
     <h1>Bienvenido a Chattide</h1>
     <p class="lead">La red social para conectar y compartir ideas.</p>
