@@ -7,6 +7,7 @@ import com.chattide.web.Utilities.Enum.TipoPrivacidad;
  * @author Juan - Luis
  */
 public class GrupoDTO {
+
     private long id;
     private String nombre;
     private String descripcion;
