@@ -1,5 +1,6 @@
 import { togglePasswordVisibility, checkArchiveSizeAndType } from './lib/utils/script-functions.js?v=1';
-import UsuarioController from './controllers/usuario-controller.js'
+import UsuarioController from './controllers/usuario-controller.js';
+import { initExitGroupButtons } from './controllers/grupo-controller.js';
 
 export function runComponentRegistry() {
     const path = window.location.pathname;
@@ -17,9 +18,12 @@ export function runComponentRegistry() {
             togglePasswordVisibility();
             break;
         case 'miGrupo.jsp':
+        case 'SvMiGrupo':
             // Agrega funciones para miGrupo.jsp si es necesario
             break;
         case 'misGrupos.jsp':
+        case 'SvMisGrupos':
+            initExitGroupButtons();
             // Agrega funciones para misGrupos.jsp si es necesario
             break;
         case 'miCuenta.jsp':
