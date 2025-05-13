@@ -5,7 +5,6 @@
 --%>
 
 <%@ include file="header.jsp" %>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <div class="row">
     <div class="col-md-8">
         <h2>Detalle de Publicación</h2>
@@ -22,7 +21,7 @@
         </div>
         <!-- Sección de comentarios -->
         <h3>Comentarios</h3>
-        <form action="ComentarioServlet" method="post" class="mb-4">
+        <form action="SvComentario" method="post" class="mb-4">
             <div class="mb-3">
                 <textarea class="form-control" name="contenido" placeholder="Escribe un comentario..." required></textarea>
             </div>
