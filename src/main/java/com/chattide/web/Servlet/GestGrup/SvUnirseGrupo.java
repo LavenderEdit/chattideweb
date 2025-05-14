@@ -2,6 +2,7 @@ package com.chattide.web.Servlet.GestGrup;
 
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioGrupoService;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -28,6 +29,8 @@ public class SvUnirseGrupo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        SvUtils.disableCache(response);
+
         Long uid = ((Usuario) request.getSession().getAttribute("usuario")).getUsuarioID();
         Long gid = Long.valueOf(request.getParameter("id"));
         if (ugs.joinGroup(uid, gid)) {
