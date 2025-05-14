@@ -5,6 +5,7 @@
 --%>
 
 <%@ include file="header.jsp" %>
+
 <div class="row">
     <div class="col-md-8">
         <h2>${grupo.nombre}</h2>
@@ -22,13 +23,17 @@
             <input type="hidden" name="idGrupo" value="${grupo.id}">
             <button type="submit" class="btn btn-primary">Publicar</button>
         </form>
+
         <c:forEach var="publicacion" items="${listaPublicaciones}">
             <div class="card mb-3">
                 <div class="card-body">
                     <p>${publicacion.contenido}</p>
-                    <small class="text-muted">Publicado por ${publicacion.usuarioNombre} el ${publicacion.fecha_publicacion}</small>
+                    <small class="text-muted">
+                        Publicado por ${publicacion.usuarioNombre} el ${publicacion.fecha_publicacion}
+                    </small>
                     <div class="mt-2">
-                        <a href="${pageContext.request.contextPath}/SvPublicacion?id=${publicacion.id}" class="btn btn-link">Ver Detalles</a>
+                        <a href="${pageContext.request.contextPath}/SvPublicacion?id=${publicacion.id}"
+                           class="btn btn-link">Ver Detalles</a>
                         <button class="btn btn-outline-primary btn-sm" onclick="darLike(${publicacion.id})">
                             Me gusta (<span id="likeCount${publicacion.id}">${publicacion.likeCount}</span>)
                         </button>
@@ -37,22 +42,38 @@
             </div>
         </c:forEach>
     </div>
+
     <div class="col-md-4">
         <h3>Miembros</h3>
         <ul class="list-group">
             <c:forEach var="miembro" items="${miembros}">
-                <div class="miembro">
-                    <img src="${pageContext.request.contextPath}/${miembro.avatar}" alt="${miembro.nombre}" width="50" height="50" />
-                    <p>${miembro.nombre} (${miembro.email})</p>
-                </div>
+                <li class="list-group-item d-flex align-items-center">
+                    <c:choose>
+                        <c:when test="${not empty miembro.avatar}">
+                            <img src="${miembro.avatar}"
+                                 alt="${miembro.nombre}" class="rounded-circle me-2" width="40" height="40"/>
+                        </c:when>
+                        <c:otherwise>
+                            <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
+                                 alt="Avatar" class="rounded-circle me-2" width="40" height="40"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <div>
+                        <strong>${miembro.nombre}</strong><br/>
+                        <small class="text-muted">${miembro.email}</small>
+                    </div>
+                </li>
             </c:forEach>
         </ul>
     </div>
 </div>
+
 <script>
     function darLike(publicacionId) {
-        // Aquí iría la lógica AJAX para actualizar el "me gusta" sin recargar la página.
+        // lógica AJAX aquí
     }
 </script>
+
 <%@ include file="footer.jsp" %>
+
 
