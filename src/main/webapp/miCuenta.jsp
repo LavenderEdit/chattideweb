@@ -1,37 +1,54 @@
 <%-- 
-    Document   : micuenta
+    Document   : miCuenta
     Created on : 11 mar. 2025, 20:05:32
-    Author     : Joan - Izz
+    Author     : Juan - Luis
 --%>
 
 <%@ include file="header.jsp" %>
-<div class="row">
+<div class="row mt-4">
     <div class="col-md-4">
         <h2>Mi Cuenta</h2>
-        <!-- Mostrar avatar y datos actuales -->
-        <img src="<%= session.getAttribute("avatar") != null ? session.getAttribute("avatar") : "./Recursos/Usuario/DefaultUserAvatar.webp"%>" 
-             alt="Avatar" class="img-thumbnail mb-3">
-        <p><strong>Nombre:</strong> <%= session.getAttribute("nombre")%></p>
-        <p><strong>Email:</strong> <%= session.getAttribute("email")%></p>
+        <c:set var="user" value="${sessionScope.usuarioDTO}"/>
+        <c:choose>
+            <c:when test="${not empty user.avatar}">
+                <img src="${user.avatar}" alt="Avatar" class="img-thumbnail mb-3" width="200" height="200"/>
+            </c:when>
+            <c:otherwise>
+                <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
+                     alt="Avatar" class="img-thumbnail mb-3" width="200" height="200"/>
+            </c:otherwise>
+        </c:choose>
+
+        <p><strong>Nombre:</strong> ${user.nombre}</p>
+        <p><strong>Email:</strong> ${user.email}</p>
     </div>
+
     <div class="col-md-8">
         <h3>Editar Perfil</h3>
-        <form action="MiCuentaServlet" method="post" enctype="multipart/form-data">
+        <form id="form-user"
+              enctype="multipart/form-data"
+              class="mt-3">
             <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" value="<%= session.getAttribute("nombre")%>" required>
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" id="nombre" name="nombre"
+                       value="${user.nombre}"
+                       class="form-control" required/>
             </div>
             <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" value="<%= session.getAttribute("email")%>" required>
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email"
+                       value="${user.email}"
+                       class="form-control" required/>
             </div>
             <div class="mb-3">
-                <label for="avatar" class="form-label">Cambiar Avatar:</label>
-                <input type="file" class="form-control" id="avatar" name="avatar">
+                <label for="avatar" class="form-label">Avatar</label>
+                <input type="file" id="avatar" name="avatar"
+                       class="form-control check-file"/>
             </div>
-            <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
+            <button type="submit" class="btn btn-success">
+                Guardar Cambios
+            </button>
         </form>
     </div>
 </div>
 <%@ include file="footer.jsp" %>
-
