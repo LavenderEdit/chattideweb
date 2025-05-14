@@ -10,6 +10,7 @@ import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -179,4 +180,28 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
         }
     }
 
+    public List<Comentario> findByPublicacion(Long publicacionId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT c FROM Comentario c WHERE c.publicacion_comentario.publicacionID = :pid ORDER BY c.fechaComentario DESC",
+                    Comentario.class)
+                    .setParameter("pid", publicacionId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Comentario> findByUsuario(Long usuarioId) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Comentario> query = em.createQuery(
+                    "SELECT c FROM Comentario c WHERE c.usuario = :usuario", Comentario.class);
+            query.setParameter("usuario", usuarioId);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
