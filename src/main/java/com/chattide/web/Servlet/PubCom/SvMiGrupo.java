@@ -7,6 +7,7 @@ import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.GrupoService;
 import com.chattide.web.Service.UsuarioGrupoService;
 import com.chattide.web.Service.UsuarioService;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -45,7 +46,8 @@ public class SvMiGrupo extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        SvUtils.disableCache(response);
+        
         var session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect("login.jsp");
