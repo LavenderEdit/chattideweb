@@ -3,8 +3,9 @@ package com.chattide.web.Servlet.AuthUser;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+import com.chattide.web.Utilities.Mensajes;
+
 import jakarta.inject.Inject;
-import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,10 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-/**
- *
- * @author Juan - Luis
- */
+import java.io.IOException;
+
 @WebServlet(name = "SvRegistro", urlPatterns = {"/SvRegistro"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,
@@ -34,33 +33,47 @@ public class SvRegistro extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        // Aquí ira cualquier otra lógica necesaria
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String nombre = request.getParameter("nombre");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
+        if (SvUtils.isNullOrEmpty(nombre, email, password)) {
+            response.sendRedirect("registro.jsp?error=" + Mensajes.CAMPOS_VACIOS);
+            return;
+        }
+
+        if (us.findByEmail(email) != null) {
+            response.sendRedirect("registro.jsp?error=" + Mensajes.EMAIL_DUPLICADO);
+            return;
+        }
+
         Part filePart = request.getPart("avatar");
-        String avatarPath = SvUtils.guardarArchivo(request, filePart, "images/Subidas");
+        String avatarUrl = null;
+        if (filePart != null && filePart.getSize() > 0) {
+            String relative = SvUtils.saveUploadedFile(
+                    filePart,
+                    getServletContext().getRealPath("/images/Subidas")
+            );
+            avatarUrl = request.getContextPath() + relative;
+        } else {
+            avatarUrl = request.getContextPath() + "/images/Usuario/DefaultUserAvatar.webp";
+        }
 
         Usuario u = new Usuario();
         u.setNombre(nombre);
         u.setEmail(email);
         u.setContrasenia(password);
-        u.setAvatar(avatarPath);
+        u.setAvatar(avatarUrl);
 
-        boolean registroExitoso = us.create(u);
+        boolean registroOk = us.create(u);
 
-        if (registroExitoso) {
-            response.sendRedirect("login.jsp?mensaje=Registro exitoso, inicia sesión");
+        if (registroOk) {
+            response.sendRedirect("login.jsp?mensaje=" + Mensajes.REGISTRO_EXITOSO);
         } else {
-            response.sendRedirect("registro.jsp?error=Error al registrar usuario");
+            response.sendRedirect("registro.jsp?error=" + Mensajes.ERROR_REGISTRO);
         }
     }
 }
