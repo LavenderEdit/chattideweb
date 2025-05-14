@@ -1,5 +1,7 @@
 package com.chattide.web.Service;
 
+import com.chattide.web.DTO.PublicacionDTO;
+import com.chattide.web.Mapper.PublicacionMapper;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Persistence.PublicacionJpaController;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -36,7 +39,14 @@ public class PublicacionService implements IPublicacionService {
         ArrayList<Publicacion> lista = SvUtils.toArrayList(listaPubli);
         return lista;
     }
-
+    
+    @Override
+    public List<PublicacionDTO> findDTOByGrupo(Long grupoId) {
+        return publicacionJpaController.findByGrupo(grupoId).stream()
+        .map(PublicacionMapper::toDTO)
+        .collect(Collectors.toList());
+    }
+    
     @Override
     public boolean create(Publicacion entity) {
         try {
@@ -70,5 +80,4 @@ public class PublicacionService implements IPublicacionService {
                     .log(Level.SEVERE, "Error borrando Publicación", ex);
         }
     }
-
 }
