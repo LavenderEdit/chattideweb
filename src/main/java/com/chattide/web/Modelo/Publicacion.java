@@ -57,6 +57,10 @@ public class Publicacion implements Serializable {
     public Publicacion() {
     }
 
+    public Publicacion(long publicacionID) {
+        this.publicacionID = publicacionID;
+    }
+    
     public Publicacion(long publicacionID, String contenidoText, Date fechaPublicacion, Usuario usuario_publicacion, Grupo grupo_publicacion, List<Comentario> listaComentarios, List<Likes> listaLikes) {
         this.publicacionID = publicacionID;
         this.contenidoText = contenidoText;
