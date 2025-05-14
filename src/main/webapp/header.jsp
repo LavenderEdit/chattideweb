@@ -1,3 +1,9 @@
+<%-- 
+    Document   : header
+    Created on : 11 mar. 2025, 09:50:30
+    Author     : Juan - Luis
+--%>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
@@ -15,6 +21,11 @@
     <body data-context-path="${pageContext.request.contextPath}">
         <script>
             window.APP_CONTEXT_PATH = document.body.dataset.contextPath;
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    window.location.reload();
+                }
+            });
         </script>
         <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container">
@@ -76,22 +87,31 @@
                             </li>
 
                             <%-- Perfil de usuario con dropdown --%>
+                            <c:set var="user" value="${sessionScope.usuario}" />
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center"
                                    href="#" id="userDropdown" role="button"
                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
-                                         alt="Avatar" class="rounded-circle me-2" width="30" height="30">
-                                    ${sessionScope.usuario.nombre}
+                                    <c:choose>
+                                        <c:when test="${not empty user.avatar}">
+                                            <img src="${user.avatar}"
+                                                 alt="Avatar" class="rounded-circle me-2" width="30" height="30"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
+                                                 alt="Avatar" class="rounded-circle me-2" width="30" height="30"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    ${user.nombre}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li>
                                         <a class="dropdown-item"
-                                           href="${pageContext.request.contextPath}/miCuenta.jsp">
+                                           href="${pageContext.request.contextPath}/SvMiCuenta">
                                             Mi Cuenta
                                         </a>
                                     </li>
-                                    <li><hr class="dropdown-divider"></li>
+                                    <li><hr class="dropdown-divider"/></li>
                                     <li>
                                         <a class="dropdown-item text-danger"
                                            href="${pageContext.request.contextPath}/logout.jsp">
