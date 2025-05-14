@@ -337,5 +337,4 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
             em.close();
         }
     }
-
 }
