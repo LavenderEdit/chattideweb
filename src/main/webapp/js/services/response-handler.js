@@ -1,40 +1,30 @@
-// services/response-handler.js
 import { openNotificationModal } from '../components/modal-notification.js';
+import { showToast } from '../components/toast-notification.js?v=1';
 
 /**
- * Maneja la respuesta estándar del servidor y muestra un modal de notificación.
- * 
- * @param {Object} response - La respuesta del servidor.
- * @param {Object} [options] - Opcional. Permite manejar callbacks como onClose.
+ * Maneja la respuesta estándar del servidor.
+ * @param {{status: number, body: any}} result
+ * @param {Object} [options]
+ * @param {Function} [options.onClose] - Callback al cerrar la notificación/modal
+ * @param {boolean} [options.useToast=false] - Si true, usa toast en vez de modal
  */
 export function handleResponse( { status, body }, options = {}) {
-    const {onClose} = options;
+    const {onClose = () => {
+        }, useToast = false} = options;
+
+    const notify = useToast
+            ? ({ title, message, type }) => showToast({title, message, type, onClose})
+    : ({ title, message }) => openNotificationModal({title, message, onClose});
 
     if (status >= 200 && status < 300) {
         if (body.success && body.message) {
-            openNotificationModal({
-                title: 'Éxito',
-                message: body.message,
-                onClose
-            });
+            notify({title: 'Éxito', message: body.message, type: 'success'});
         } else {
-            openNotificationModal({
-                title: 'Error',
-                message: body.message || 'Operación no exitosa.',
-                onClose
-            });
+            notify({title: 'Error', message: body.message || 'Operación no exitosa.', type: 'warning'});
         }
     } else if (status >= 400 && status < 500) {
-        openNotificationModal({
-            title: 'Atención',
-            message: body.message || 'Solicitud inválida.',
-            onClose
-        });
+        notify({title: 'Atención', message: body.message || 'Solicitud inválida.', type: 'warning'});
     } else {
-        openNotificationModal({
-            title: 'Error servidor',
-            message: body.message || 'Intente más tarde.',
-            onClose
-        });
+        notify({title: 'Error servidor', message: body.message || 'Intente más tarde.', type: 'danger'});
 }
 }
