@@ -4,14 +4,16 @@ import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import com.chattide.web.Utilities.Mensajes;
-import jakarta.inject.Inject;
+
 import java.io.IOException;
+import java.util.Optional;
+
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 /**
  *
@@ -26,12 +28,6 @@ public class SvLogin extends HttpServlet {
     @Override
     public void init() throws ServletException {
         this.us = new UsuarioService();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.sendRedirect("login.jsp");
     }
 
     @Override
