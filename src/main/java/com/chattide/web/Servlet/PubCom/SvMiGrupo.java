@@ -1,10 +1,12 @@
 package com.chattide.web.Servlet.PubCom;
 
 import com.chattide.web.DTO.GrupoDTO;
+import com.chattide.web.DTO.PublicacionDTO;
 import com.chattide.web.DTO.UsuarioDTO;
 import com.chattide.web.Mapper.UsuarioMapper;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.GrupoService;
+import com.chattide.web.Service.PublicacionService;
 import com.chattide.web.Service.UsuarioGrupoService;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
@@ -35,12 +37,16 @@ public class SvMiGrupo extends HttpServlet {
 
     @Inject
     UsuarioService usuarioService;
+    
+    @Inject
+    PublicacionService publicacionService;
 
     @Override
     public void init() throws ServletException {
         this.grupoService = new GrupoService();
         this.usuarioGrupoService = new UsuarioGrupoService();
         this.usuarioService = new UsuarioService();
+        this.publicacionService   = new PublicacionService();
     }
 
     @Override
@@ -78,8 +84,10 @@ public class SvMiGrupo extends HttpServlet {
                 .map(ug -> usuarioService.findById(ug.getUsuario_grupo().getUsuarioID()))
                 .map(UsuarioMapper::toDTO)
                 .collect(Collectors.toList());
-
         request.setAttribute("miembros", miembros);
+        
+        List<PublicacionDTO> publicaciones = publicacionService.findDTOByGrupo(grupoId);
+        request.setAttribute("listaPublicaciones", publicaciones);
 
         getServletContext()
                 .getRequestDispatcher("/miGrupo.jsp")
