@@ -3,10 +3,13 @@ package com.chattide.web.Utilities.GlobalFunctions;
 import com.chattide.web.Modelo.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
@@ -24,7 +27,6 @@ import jakarta.servlet.http.Part;
  */
 public class SvUtils {
 
-    /* Metodos para los campos */
     // Método para campos vacios
     public static boolean isNullOrEmpty(String... strs) {
         if (strs == null) {
@@ -60,6 +62,18 @@ public class SvUtils {
         return new ArrayList<>(list);
     }
 
+    /**
+     * Añade las cabeceras HTTP necesarias para deshabilitar la caché del
+     * navegador y forzar siempre una recarga.
+     *
+     * @param response el HttpServletResponse donde setear los headers
+     */
+    public static void disableCache(HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+    }
+
     /* Métodos para listas */
     //Método para encontrar un usuario por su nombre de usuario o email con tres parametros
     public static Optional<Usuario> findUsersByEmail(String email, ArrayList<Usuario> listaUsuarios) {
@@ -69,31 +83,30 @@ public class SvUtils {
     }
 
     /* Métodos para las clases */
-    public static String guardarArchivo(HttpServletRequest request, Part filePart, String carpetaDestino) throws IOException {
+    public static String saveUploadedFile(Part filePart, String realPath) throws IOException {
         if (filePart == null || filePart.getSize() <= 0) {
-            return "images/Usuario/DefaultUserAvatar.webp";
+            return "/ChattideWeb/images/Usuario/DefaultUserAvatar.webp";
         }
 
-        String uploadPath = request.getServletContext().getRealPath("") + File.separator + carpetaDestino;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
+        File uploadDir = new File(realPath);
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            throw new IOException("No se pudo crear el directorio: " + realPath);
         }
 
-        String originalFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-
-        String extension = "";
-        int dotIndex = originalFileName.lastIndexOf('.');
-        if (dotIndex >= 0) {
-            extension = originalFileName.substring(dotIndex);
+        String submitted = filePart.getSubmittedFileName();
+        String ext = "";
+        int i = submitted.lastIndexOf('.');
+        if (i > 0) {
+            ext = submitted.substring(i);
         }
-        String baseName = originalFileName.substring(0, dotIndex >= 0 ? dotIndex : originalFileName.length());
-        String finalFileName = baseName + "_" + System.currentTimeMillis() + extension;
+        String filename = UUID.randomUUID().toString() + ext;
 
-        String fileSavePath = uploadDir.getAbsolutePath() + File.separator + finalFileName;
-        filePart.write(fileSavePath);
+        File dest = new File(uploadDir, filename);
+        try (var in = filePart.getInputStream()) {
+            Files.copy(in, dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
 
-        return carpetaDestino + "/" + finalFileName;
+        return "/images/Subidas/" + filename;
     }
 
     /* Respuestas JSON */
