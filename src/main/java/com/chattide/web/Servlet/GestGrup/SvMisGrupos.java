@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.chattide.web.DTO.GrupoDTO;
 import com.chattide.web.Service.GrupoService;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +32,8 @@ public class SvMisGrupos extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        SvUtils.disableCache(response);
+        
         var session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendRedirect("login.jsp");
