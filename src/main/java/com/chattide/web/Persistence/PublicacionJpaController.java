@@ -267,6 +267,21 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         }
     }
 
+    public List<Publicacion> findByGrupo(Long grupoId) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT p FROM Publicacion p "
+                    + "WHERE p.grupo_publicacion.grupoID = :gid "
+                    + "ORDER BY p.fechaPublicacion DESC",
+                    Publicacion.class)
+                    .setParameter("gid", grupoId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     public int getPublicacionCount() {
         EntityManager em = getEntityManager();
         try {
@@ -279,5 +294,4 @@ public class PublicacionJpaController extends AbstractJpaController implements S
             em.close();
         }
     }
-    
 }
