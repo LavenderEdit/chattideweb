@@ -48,6 +48,13 @@ public class PublicacionService implements IPublicacionService {
     }
     
     @Override
+    public PublicacionDTO findDTOById(Long publId) {
+        Publicacion publicacion = publicacionJpaController.findPublicacion(publId);
+        PublicacionDTO pubDTO = PublicacionMapper.toDTO(publicacion);
+        return pubDTO;
+    }
+    
+    @Override
     public boolean create(Publicacion entity) {
         try {
             publicacionJpaController.create(entity);
