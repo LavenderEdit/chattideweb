@@ -7,23 +7,26 @@ import java.util.Date;
  * @author Juan - Luis
  */
 public class ComentarioDTO {
+
     private Long id;
     private String contenido;
     private Date fechaComentario;
     private Long publicacionId;
     private Long usuarioId;
     private String usuarioNombre;
+    private String avatarUsuarioUrl;
 
     public ComentarioDTO() {
     }
 
-    public ComentarioDTO(Long id, String contenido, Date fechaComentario, Long publicacionId, Long usuarioId, String usuarioNombre) {
+    public ComentarioDTO(Long id, String contenido, Date fechaComentario, Long publicacionId, Long usuarioId, String usuarioNombre, String auu) {
         this.id = id;
         this.contenido = contenido;
         this.fechaComentario = fechaComentario;
         this.publicacionId = publicacionId;
         this.usuarioId = usuarioId;
         this.usuarioNombre = usuarioNombre;
+        this.avatarUsuarioUrl = auu;
     }
 
     public Long getId() {
@@ -72,5 +75,13 @@ public class ComentarioDTO {
 
     public void setUsuarioNombre(String usuarioNombre) {
         this.usuarioNombre = usuarioNombre;
+    }
+
+    public String getAvatarUsuarioUrl() {
+        return avatarUsuarioUrl;
+    }
+
+    public void setAvatarUsuarioUrl(String avatarUsuarioUrl) {
+        this.avatarUsuarioUrl = avatarUsuarioUrl;
     }
 }
