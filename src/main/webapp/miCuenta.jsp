@@ -11,11 +11,18 @@
         <c:set var="user" value="${sessionScope.usuarioDTO}"/>
         <c:choose>
             <c:when test="${not empty user.avatar}">
-                <img src="${user.avatar}" alt="Avatar" class="img-thumbnail mb-3" width="200" height="200"/>
+                <img src="${user.avatar}"
+                     alt="Avatar"
+                     class="img-thumbnail mb-3"
+                     width="200" height="200"
+                     onerror="this.onerror=null;
+                     this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
             </c:when>
             <c:otherwise>
                 <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
-                     alt="Avatar" class="img-thumbnail mb-3" width="200" height="200"/>
+                     alt="Avatar"
+                     class="img-thumbnail mb-3"
+                     width="200" height="200"/>
             </c:otherwise>
         </c:choose>
 
