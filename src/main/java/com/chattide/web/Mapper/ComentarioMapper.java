@@ -17,6 +17,7 @@ public class ComentarioMapper {
         dto.setId(c.getComentarioID());
         dto.setContenido(c.getContenidoText());
         dto.setFechaComentario(c.getFechaComentario());
+        dto.setAvatarUsuarioUrl(c.getUsuario_comentario().getAvatar());
         if (c.getPublicacion_comentario() != null) {
             dto.setPublicacionId(c.getPublicacion_comentario().getPublicacionID());
         }
