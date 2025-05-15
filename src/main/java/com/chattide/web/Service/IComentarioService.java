@@ -10,6 +10,8 @@ import java.util.List;
  * @author Juan - Luis
  */
 public interface IComentarioService extends ICrudService<Comentario, Long> {
+
     List<ComentarioDTO> findByPublicacion(Long publicacionId);
+
     List<Comentario> findByUsuario(Long usuarioId);
 }

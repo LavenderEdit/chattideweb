@@ -39,21 +39,21 @@ public class PublicacionService implements IPublicacionService {
         ArrayList<Publicacion> lista = SvUtils.toArrayList(listaPubli);
         return lista;
     }
-    
+
     @Override
     public List<PublicacionDTO> findDTOByGrupo(Long grupoId) {
         return publicacionJpaController.findByGrupo(grupoId).stream()
-        .map(PublicacionMapper::toDTO)
-        .collect(Collectors.toList());
+                .map(PublicacionMapper::toDTO)
+                .collect(Collectors.toList());
     }
-    
+
     @Override
     public PublicacionDTO findDTOById(Long publId) {
         Publicacion publicacion = publicacionJpaController.findPublicacion(publId);
         PublicacionDTO pubDTO = PublicacionMapper.toDTO(publicacion);
         return pubDTO;
     }
-    
+
     @Override
     public boolean create(Publicacion entity) {
         try {
