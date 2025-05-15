@@ -4,7 +4,6 @@ import com.chattide.web.DTO.GrupoDTO;
 import com.chattide.web.DTO.PublicacionDTO;
 import com.chattide.web.DTO.UsuarioDTO;
 import com.chattide.web.Mapper.UsuarioMapper;
-import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.GrupoService;
 import com.chattide.web.Service.PublicacionService;
 import com.chattide.web.Service.UsuarioGrupoService;
@@ -17,6 +16,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -53,44 +53,33 @@ public class SvMiGrupo extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         SvUtils.disableCache(response);
-        
-        var session = request.getSession(false);
+
+        HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
-        Long usuarioId = ((Usuario) session.getAttribute("usuario")).getUsuarioID();
+        Long grupoId = SvUtils.parseLongParam(request, "id", response);
+        if (grupoId == null) return;
 
-        Long grupoId = null;
-        try {
-            grupoId = Long.valueOf(request.getParameter("id"));
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de grupo inválido");
-            return;
-        }
-
-        boolean pertenece = usuarioGrupoService.isMember(usuarioId, grupoId);
-        if (!pertenece) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "No perteneces a este grupo");
-            return;
-        }
-
-        GrupoDTO grupoDTO = grupoService.findDTOById(grupoId);
-        request.setAttribute("grupo", grupoDTO);
-
-        var relaciones = usuarioGrupoService.findByGrupo(grupoId);
-        List<UsuarioDTO> miembros = relaciones.stream()
-                .map(ug -> usuarioService.findById(ug.getUsuario_grupo().getUsuarioID()))
-                .map(UsuarioMapper::toDTO)
-                .collect(Collectors.toList());
-        request.setAttribute("miembros", miembros);
-        
+        GrupoDTO grupoDto = grupoService.findDTOById(grupoId);
         List<PublicacionDTO> publicaciones = publicacionService.findDTOByGrupo(grupoId);
-        request.setAttribute("listaPublicaciones", publicaciones);
+        List<UsuarioDTO> miembros = usuarioGrupoService.findByGrupo(grupoId)
+                                      .stream()
+                                      .map(ug -> UsuarioMapper.toDTO(ug.getUsuario_grupo()))
+                                      .collect(Collectors.toList());
 
-        getServletContext()
-                .getRequestDispatcher("/miGrupo.jsp")
-                .forward(request, response);
+        request.setAttribute("grupo", grupoDto);
+        request.setAttribute("listaPublicaciones", publicaciones);
+        request.setAttribute("miembros", miembros);
+
+        if ("1".equals(request.getParameter("aj"))) {
+            request.getRequestDispatcher("/fragments/publicacion-card.jsp")
+               .forward(request, response);
+        } else {
+            request.getRequestDispatcher("/miGrupo.jsp")
+               .forward(request, response);
+        }
     }
 }
