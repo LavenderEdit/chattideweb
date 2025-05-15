@@ -1,6 +1,9 @@
 import { togglePasswordVisibility, checkArchiveSizeAndType } from './lib/utils/script-functions.js?v=1';
 import UsuarioController from './controllers/usuario-controller.js?v=1';
 import { initExitGroupButtons } from './controllers/grupo-controller.js';
+import PublicacionController from './controllers/publicacion-controller.js';
+import ComentarioController from './controllers/comentario-controller.js?v=1';
+
 
 export function runComponentRegistry() {
     const path = window.location.pathname;
@@ -19,6 +22,9 @@ export function runComponentRegistry() {
             break;
         case 'miGrupo.jsp':
         case 'SvMiGrupo':
+            initExitGroupButtons();
+            const gid = document.body.dataset.grupoId;
+            PublicacionController.init(gid);
         case 'misGrupos.jsp':
         case 'SvMisGrupos':
             initExitGroupButtons();
@@ -31,6 +37,9 @@ export function runComponentRegistry() {
             // Agrega funciones para miCuenta.jsp si es necesario
             break;
         case 'publicacion.jsp':
+        case 'SvPublicacion':
+            const pid = document.body.dataset.grupoId;
+            ComentarioController.init(pid);
             // Agrega funciones para publicacion.jsp si es necesario
             break;
         case 'crearGrupo.jsp':
