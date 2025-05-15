@@ -4,7 +4,10 @@ import com.chattide.web.Modelo.Comentario;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.ComentarioService;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,15 +16,17 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
  * @author Juan - Luis
  */
 @WebServlet(name = "SvComentario", urlPatterns = {"/SvComentario"})
+@MultipartConfig
 public class SvComentario extends HttpServlet {
 
-    ComentarioService comentarioService;
+    private ComentarioService comentarioService;
 
     @Override
     public void init() throws ServletException {
@@ -31,51 +36,57 @@ public class SvComentario extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String contenido = request.getParameter("contenido");
-        Date fechaComentario = new Date();
+        SvUtils.disableCache(response);
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debe iniciar sesión");
             return;
         }
-
         Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-        String contenidoCo = request.getParameter("contenido");
-        String idPub = request.getParameter("idPublicacion");
-        if (contenido == null || contenido.isBlank() || idPub == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "Parámetros 'contenido' o 'idPublicacion' faltantes o vacíos.");
+        
+        String contenido = request.getParameter("contenido");
+        Long publicacionId = SvUtils.parseLongParam(request, "idPublicacion", response);
+        if (publicacionId == null || contenido == null || contenido.isBlank()) {
             return;
         }
 
-        long publicacionId;
-        try {
-            publicacionId = Long.parseLong(idPub);
-        } catch (NumberFormatException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "El parámetro 'idPublicacion' no es un número válido.");
-            return;
-        }
+        Comentario coment = new Comentario();
+        coment.setContenidoText(contenido.trim());
+        coment.setFechaComentario(new Date());
+        coment.setUsuario_comentario(usuario);
+        coment.setPublicacion_comentario(new Publicacion(publicacionId));
+        boolean creado = comentarioService.create(coment);
 
-        Comentario comentario = new Comentario();
-        comentario.setContenidoText(contenido);
-        comentario.setFechaComentario(new Date());
-        comentario.setUsuario_comentario(usuario);
-        comentario.setPublicacion_comentario(new Publicacion(publicacionId));
-
-        boolean creado = comentarioService.create(comentario);
-
-        response.setContentType("application/json;charset=UTF-8");
-        if (creado) {
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(
-                    "{\"success\":true,\"message\":\"Comentario creado con éxito.\"}"
-            );
+        boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+        if (isAjax) {
+            response.setContentType("application/json;charset=UTF-8");
+            if (creado) {
+                SvUtils.respondWithJson(response,
+                        HttpServletResponse.SC_CREATED,
+                        true,
+                        "Comentario creado con éxito",
+                        Map.of(
+                                "id", coment.getComentarioID(),
+                                "contenido", coment.getContenidoText(),
+                                "fecha", coment.getFechaComentario()
+                        )
+                );
+            } else {
+                SvUtils.respondWithJson(response,
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        false,
+                        "Error creando comentario",
+                        null
+                );
+            }
         } else {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Ocurrió un error al crear el comentario.");
+            if (!creado) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "Ocurrió un error al crear el comentario");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/SvPublicacion?id=" + publicacionId);
+            }
         }
     }
 }
