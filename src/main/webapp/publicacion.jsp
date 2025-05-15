@@ -1,62 +1,59 @@
 <%-- 
     Document   : publicacion
     Created on : 11 mar. 2025, 20:06:23
-    Author     : Joan - Izz
+    Author     : Juan - Luis
 --%>
 
 <%@ include file="header.jsp" %>
-
 <div class="row">
-    <div class="col-md-8">
-        <h2>Detalle de Publicación</h2>
-        <div class="card mb-3">
+    <div class="col-lg-8">
+
+        <div class="card mb-4 shadow-sm">
             <div class="card-body">
-                <p>${publicacion.contenido}</p>
-                <small class="text-muted">
+                <p class="fs-5">${publicacion.contenido}</p>
+                <div class="text-muted small mb-2">
                     Publicado por 
                     <a href="${pageContext.request.contextPath}/SvPerfil?userId=${publicacion.autorId}">
                         ${publicacion.autorNombre}
                     </a>
-                    el ${publicacion.fechaPublicacion}
-                </small>
-                <div class="mt-2">
-                    <button class="btn btn-outline-primary btn-sm"
-                            onclick="darLike(${publicacion.id})">
-                        Me gusta (
-                        <span id="likeCount">${publicacion.likeCount}</span>
-                        )
-                    </button>
+                    &bull; 
+                    <fmt:formatDate 
+                        value="${publicacion.fechaPublicacion}" 
+                        pattern="dd/MM/yyyy HH:mm"
+                        />
                 </div>
+                <button id="btn-like" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-thumbs-up"></i>
+                    Me gusta 
+                    <span id="likeCount">${publicacion.likeCount}</span>
+                </button>
             </div>
         </div>
-        <!-- Sección de comentarios -->
-        <h3>Comentarios (${publicacion.comentarioCount})</h3>
-        <form action="${pageContext.request.contextPath}/SvComentario" method="post" class="mb-4">
-            <div class="mb-3">
-                <textarea class="form-control"
-                          name="contenido"
-                          placeholder="Escribe un comentario..."
-                          required></textarea>
+
+        <h4>Comentarios (<span>${publicacion.comentarioCount}</span>)</h4>
+        <form id="form-comentario" class="mb-4">
+            <div class="input-group">
+                <textarea class="form-control" name="contenido" placeholder="Escribe un comentario..." style="resize: none;" required></textarea>
+                <input type="hidden" name="idPublicacion" value="${publicacion.id}" />
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
-            <input type="hidden" name="idPublicacion" value="${publicacion.id}">
-            <button type="submit" class="btn btn-primary">Comentar</button>
         </form>
-        <hr>
-        <c:forEach var="comentario" items="${listaComentarios}">
-            <div class="mb-2">
-                <strong>${comentario.usuarioNombre}:</strong>
-                ${comentario.contenido}
-                <small class="text-muted">
-                    (${comentario.fechaComentario})
-                </small>
-            </div>
-        </c:forEach>
+
+        <!-- Contenedor de comentarios -->
+        <div id="comentarios-container">
+          <jsp:include page="fragments/comentario-list.jsp">
+            <jsp:param name="listaComentarios" value="${listaComentarios}"/>
+          </jsp:include>
+        </div>
+
     </div>
 </div>
 
 <script>
-    function darLike(publicacionId) {
-        // Lógica AJAX para actualizar "me gusta".
-    }
+    document.getElementById('btn-like').addEventListener('click', () => {
+        // tu lógica AJAX para dar like...
+    });
 </script>
 <%@ include file="footer.jsp" %>
