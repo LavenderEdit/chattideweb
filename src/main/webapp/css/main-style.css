@@ -5,3 +5,17 @@
 
 @import url('./style-margin-adjuster.css');
 
+.avatar-bg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.3s ease;
+}
+
+.avatar-bg:hover {
+    transform: scale(1.1);
+}
