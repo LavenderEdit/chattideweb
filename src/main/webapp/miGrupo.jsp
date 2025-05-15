@@ -5,7 +5,6 @@
 --%>
 
 <%@ include file="header.jsp" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <div class="row">
     <div class="col-md-8">
@@ -18,50 +17,24 @@
             <i class="fas fa-sign-out-alt"></i>
         </button>
 
-        <form action="${pageContext.request.contextPath}/SvPublicar" method="post" class="mb-4">
-            <div class="mb-3">
-                <textarea class="form-control"
-                          name="contenido"
-                          placeholder="Escribe tu publicación..."
-                          required></textarea>
+        <!-- Formulario AJAX para publicar -->
+        <form id="form-publicar" class="mb-4">
+            <div class="input-group">
+                <textarea class="form-control" name="contenido"
+                          placeholder="Escribe tu publicación..." style="resize: none;" required></textarea>
+                <input type="hidden" name="idGrupo" value="${grupo.id}" />
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
-            <input type="hidden" name="idGrupo" value="${grupo.id}">
-            <button type="submit" class="btn btn-primary">Publicar</button>
         </form>
 
-        <c:forEach var="publicacion" items="${listaPublicaciones}">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <!-- contenido desde DTO -->
-                    <p>${publicacion.contenido}</p>
-
-                    <small class="text-muted">
-                        Publicado por 
-                        <a href="${pageContext.request.contextPath}/SvPerfil?userId=${publicacion.autorId}">
-                            ${publicacion.autorNombre}
-                        </a>
-                        el ${publicacion.fechaPublicacion}
-                    </small>
-
-                    <div class="mt-2 d-flex align-items-center">
-                        <a href="${pageContext.request.contextPath}/SvPublicacion?id=${publicacion.id}"
-                           class="btn btn-link me-3">
-                            Ver Detalles
-                        </a>
-                        <button class="btn btn-outline-primary btn-sm me-2"
-                                onclick="darLike(${publicacion.id})">
-                            Me gusta (<span id="likeCount${publicacion.id}">
-                                ${publicacion.likeCount}
-                            </span>)
-                        </button>
-                        <!-- mostrar número de comentarios si quieres -->
-                        <small class="text-secondary">
-                            ${publicacion.comentarioCount} comentarios
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </c:forEach>
+        <!-- Contenedor de publicaciones -->
+        <div id="publicaciones-container">
+            <jsp:include page="fragments/publicacion-card.jsp">
+                <jsp:param name="listaPublicaciones" value="${listaPublicaciones}"/>
+            </jsp:include>
+        </div>
     </div>
 
     <div class="col-md-4">
@@ -74,7 +47,9 @@
                             <img src="${miembro.avatar}"
                                  alt="${miembro.nombre}"
                                  class="rounded-circle me-2"
-                                 width="40" height="40"/>
+                                 width="40" height="40"
+                                 onerror="this.onerror=null;
+                                 this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
                         </c:when>
                         <c:otherwise>
                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
