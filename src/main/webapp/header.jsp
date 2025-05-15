@@ -6,7 +6,8 @@
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c"   uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"  %>
 <%@ page session="true" %>
 <!DOCTYPE html>
 <html lang="es">
@@ -16,9 +17,9 @@
         <title>Chattide</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/Logos/Logo-Chattide-FondoClaro.ico"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css?v=1">
     </head>
-    <body data-context-path="${pageContext.request.contextPath}">
+    <body data-context-path="${pageContext.request.contextPath}" data-grupo-id="${param.id}">
         <script>
             window.APP_CONTEXT_PATH = document.body.dataset.contextPath;
             window.addEventListener('pageshow', function (event) {
@@ -95,11 +96,16 @@
                                     <c:choose>
                                         <c:when test="${not empty user.avatar}">
                                             <img src="${user.avatar}"
-                                                 alt="Avatar" class="rounded-circle me-2" width="30" height="30"/>
+                                                 alt="Avatar"
+                                                 class="rounded-circle me-2 avatar-bg"
+                                                 onerror="this.onerror=null;
+                                                 this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
                                         </c:when>
                                         <c:otherwise>
                                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
-                                                 alt="Avatar" class="rounded-circle me-2" width="30" height="30"/>
+                                                 alt="Avatar"
+                                                 class="rounded-circle me-2"
+                                                 width="30" height="30"/>
                                         </c:otherwise>
                                     </c:choose>
                                     ${user.nombre}
