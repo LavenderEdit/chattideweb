@@ -1,10 +1,13 @@
 package com.chattide.web.Servlet.PubCom;
 
+import com.chattide.web.Modelo.Grupo;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.PublicacionService;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,67 +16,73 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 
 /**
  *
  * @author Juan - Luis
  */
 @WebServlet(name = "SvPublicar", urlPatterns = {"/SvPublicar"})
+@MultipartConfig
 public class SvPublicar extends HttpServlet {
 
-    PublicacionService publicacionService;
-    //ComentarioService comentarioService;
-    //UsuarioGrupoService ugService;
+    private PublicacionService publicacionService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         this.publicacionService = new PublicacionService();
-        //this.comentarioService = new ComentarioService();
-        //this.ugService = new UsuarioGrupoService();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        SvUtils.disableCache(response);
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debe iniciar sesión");
             return;
         }
-
         Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         String contenido = request.getParameter("contenido");
-        String idGrupo = request.getParameter("idGrupo");
-        if (contenido == null || contenido.isBlank() || idGrupo == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "Faltan parámetros: contenido o idGrupo");
-            return;
-        }
-
-        long grupoId;
-        try {
-            grupoId = Long.parseLong(idGrupo);
-        } catch (NumberFormatException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                    "El parámetro 'idGrupo' no es un número válido.");
+        String idParam = request.getParameter("idGrupo");
+        Long grupoId = Long.valueOf(idParam);
+        if (grupoId == null || contenido == null || contenido.isBlank()) {
             return;
         }
 
         Publicacion pub = new Publicacion();
-        pub.setContenidoText(contenido);
+        pub.setContenidoText(contenido.trim());
         pub.setFechaPublicacion(new Date());
         pub.setUsuario_publicacion(usuario);
-        pub.setGrupo_publicacion(new com.chattide.web.Modelo.Grupo(grupoId));
+        pub.setGrupo_publicacion(new Grupo(grupoId));
 
-        boolean ok = publicacionService.create(pub);
-        if (!ok) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "No se pudo crear la publicación.");
-            return;
+        boolean created = publicacionService.create(pub);
+
+        String ajaxHeader = request.getHeader("X-Requested-With");
+        boolean isAjax = "XMLHttpRequest".equals(ajaxHeader);
+
+        if (isAjax) {
+            response.setContentType("application/json;charset=UTF-8");
+            if (created) {
+                SvUtils.respondWithJson(response, HttpServletResponse.SC_OK, true,
+                        "Publicación creada", Map.of(
+                                "id", pub.getPublicacionID(),
+                                "contenido", pub.getContenidoText(),
+                                "fecha", pub.getFechaPublicacion()
+                        ));
+            } else {
+                SvUtils.respondWithJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        false, "Error creando publicación", null);
+            }
+        } else {
+            if (!created) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        "No se pudo crear la publicación.");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/SvMiGrupo?id=" + grupoId);
+            }
         }
-
-        response.sendRedirect(request.getContextPath() + "/SvMiGrupo?id=" + grupoId);
     }
 }
