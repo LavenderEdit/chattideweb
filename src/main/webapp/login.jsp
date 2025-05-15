@@ -5,6 +5,12 @@
 --%>
 
 <%@ include file="header.jsp" %>
+<%
+    if (session.getAttribute("usuario") != null) {
+        response.sendRedirect(request.getContextPath() + "/SvMisGrupos");
+        return;
+    }
+%>
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="mb-4">Iniciar Sesión</h2>
