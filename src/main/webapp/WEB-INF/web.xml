@@ -24,6 +24,10 @@
         <servlet-name>SvSalirGrupo</servlet-name>
         <servlet-class>com.chattide.web.Servlet.GestGrup.SvSalirGrupo</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SvPublicar</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvPublicar</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SvRegistro</servlet-name>
         <url-pattern>/SvRegistro</url-pattern>
@@ -47,6 +51,10 @@
     <servlet-mapping>
         <servlet-name>SvSalirGrupo</servlet-name>
         <url-pattern>/SvSalirGrupo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvPublicar</servlet-name>
+        <url-pattern>/SvPublicar</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
