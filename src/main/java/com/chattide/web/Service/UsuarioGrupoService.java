@@ -4,6 +4,7 @@ import com.chattide.web.Modelo.Usuario_Grupo;
 import com.chattide.web.Persistence.Usuario_GrupoJpaController;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
  *
  * @author Juan - Luis
  */
+@Named
 public class UsuarioGrupoService implements IUsuarioGrupoService {
 
     @Inject
