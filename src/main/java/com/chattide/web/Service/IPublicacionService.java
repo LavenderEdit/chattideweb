@@ -14,4 +14,6 @@ public interface IPublicacionService extends ICrudService<Publicacion, Long> {
     List<PublicacionDTO> findDTOByGrupo(Long grupoId);
 
     PublicacionDTO findDTOById(Long publId);
+    
+    List<PublicacionDTO> findDTOByGrupoYUsuario(Long grupoId, Long usuarioId);
 }
