@@ -1,35 +1,35 @@
 import { createCommentary, fetchComentariosHtml } from '../services/comentario-service.js';
 import { showToast } from '../components/toast-notification.js';
-
 const ComentarioController = {
     init(publicacionId) {
         this.publicacionId = publicacionId;
         const form = document.getElementById('form-comentario');
         form.addEventListener('submit', e => this.onComentar(e));
-
         this.refreshComentarios();
-
-        this._poller = setInterval(() => {
-            this.refreshComentarios();
-        }, 5000);
-
+        this._startPolling();
         window.addEventListener('beforeunload', () => clearInterval(this._poller));
     },
 
+    _startPolling() {
+        this._poller = setInterval(async () => {
+            try {
+                await this.refreshComentarios();
+            } catch (err) {
+                console.error('Error refrescando comentarios, detengo polling:', err);
+                clearInterval(this._poller);
+            }
+        }, 5000);
+    },
+
     async refreshComentarios() {
-        try {
-            const html = await fetchComentariosHtml(this.publicacionId);
-            document.getElementById('comentarios-container').innerHTML = html;
-        } catch (err) {
-            console.error('Error refrescando comentarios: ', err);
-        }
+        const html = await fetchComentariosHtml(this.publicacionId);
+        document.getElementById('comentarios-container').innerHTML = html;
     },
 
     async onComentar(evt) {
         evt.preventDefault();
         const form = document.getElementById('form-comentario');
         const data = new FormData(form);
-
         try {
             const {status, body} = await createCommentary(data);
             if (status === 201 && body.success) {
@@ -44,5 +44,4 @@ const ComentarioController = {
         }
     }
 };
-
 export default ComentarioController;
