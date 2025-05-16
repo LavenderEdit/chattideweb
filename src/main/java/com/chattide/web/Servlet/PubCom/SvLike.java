@@ -44,7 +44,6 @@ public class SvLike extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SvUtils.disableCache(response);
         response.setContentType("application/json;charset=UTF-8");
 
         HttpSession session = request.getSession(false);
@@ -67,42 +66,41 @@ public class SvLike extends HttpServlet {
             return;
         }
 
-        if (ls.findByUserAndPublication(usuario.getUsuarioID(), pubId).isPresent()) {
-            SvUtils.respondWithError(response, HttpServletResponse.SC_CONFLICT,
-                    Mensajes.LIKE_YA_PUESTO);
-            return;
+        try {
+            Likes lk = new Likes();
+            lk.setUsuario_likes(usuario);
+            lk.setPublicacion_likes(pub);
+            ls.create(lk);
+
+            long total = ls.countByPublication(pubId);
+            Map<String, Object> data = Map.of(
+                    "newLikeId", lk.getLikesID(),
+                    "newCount", total
+            );
+            SvUtils.respondWithJsonObject(response,
+                    HttpServletResponse.SC_CREATED,
+                    true,
+                    Mensajes.LIKE,
+                    Map.of(),
+                    data
+            );
+        } catch (Exception ex) {
+            Throwable cause = ex.getCause();
+            if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
+                SvUtils.respondWithError(response,
+                        HttpServletResponse.SC_CONFLICT,
+                        Mensajes.LIKE_YA_PUESTO);
+            } else {
+                SvUtils.respondWithError(response,
+                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        Mensajes.ERROR_SERVIDOR);
+            }
         }
-
-        Likes lk = new Likes();
-        lk.setUsuario_likes(usuario);
-        lk.setPublicacion_likes(pub);
-
-        boolean created = ls.create(lk);
-        if (!created) {
-            SvUtils.respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    Mensajes.ERROR_SERVIDOR);
-            return;
-        }
-
-        long total = ls.countByPublication(pubId);
-
-        Map<String, Object> data = Map.of(
-                "newLikeId", lk.getLikesID(),
-                "newCount", total
-        );
-        SvUtils.respondWithJsonObject(response,
-                HttpServletResponse.SC_CREATED,
-                true,
-                Mensajes.LIKE,
-                Map.of(),
-                data
-        );
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SvUtils.disableCache(response);
         response.setContentType("application/json;charset=UTF-8");
 
         HttpSession session = request.getSession(false);

@@ -78,6 +78,21 @@ public class SvUtils {
         }
     }
 
+    public static String normalizeAvatarLogin(ServletContext ctx, String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.isBlank()) {
+            return null;
+        }
+        String context = ctx.getContextPath();
+        String relative = avatarUrl.startsWith(context)
+                ? avatarUrl.substring(context.length())
+                : avatarUrl;
+        String realPath = ctx.getRealPath(relative);
+        if (realPath != null && new File(realPath).isFile()) {
+            return context + relative + "?v=" + System.currentTimeMillis();
+        }
+        return null;
+    }
+
     public static String normalizeAvatar(ServletContext ctx, String avatarUrl) {
         if (avatarUrl == null) {
             return null;

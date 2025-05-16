@@ -44,26 +44,26 @@ public class SvLogin extends HttpServlet {
         }
 
         Optional<Usuario> optUsuario = SvUtils.findUsersByEmail(correo, us.findAll());
-
         if (!optUsuario.isPresent()) {
             SvUtils.respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_INEXISTENTE);
             return;
         }
 
         Usuario user = optUsuario.get();
-
-        if (user.checkContrasenia(contra)) {
-            ServletContext ctx = getServletContext();
-            user.setAvatar(SvUtils.normalizeAvatar(ctx, user.getAvatar()));
-            request.getSession().setAttribute("usuario", user);
-
-            SvUtils.respondWithSuccess(
-                    response,
-                    HttpServletResponse.SC_OK,
-                    Mensajes.USUARIO_LOGEADO + user.getNombre()
-            );
-        } else {
+        if (!user.checkContrasenia(contra)) {
             SvUtils.respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_CONTRA_INCORRECTA);
+            return;
         }
+
+        ServletContext ctx = getServletContext();
+        String normalized = SvUtils.normalizeAvatarLogin(ctx, user.getAvatar());
+        user.setAvatar(normalized);
+
+        request.getSession().setAttribute("usuario", user);
+        SvUtils.respondWithSuccess(
+                response,
+                HttpServletResponse.SC_OK,
+                Mensajes.USUARIO_LOGEADO + user.getNombre()
+        );
     }
 }

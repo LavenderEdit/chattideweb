@@ -17,7 +17,7 @@
         <title>Chattide</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/Logos/Logo-Chattide-FondoClaro.ico"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css?v=1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css?v=2">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link

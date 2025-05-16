@@ -20,6 +20,7 @@ public class PublicacionMapper {
         dto.setFechaPublicacion(p.getFechaPublicacion());
         dto.setAutorId(p.getUsuario_publicacion().getUsuarioID());
         dto.setAutorNombre(p.getUsuario_publicacion().getNombre());
+        dto.setAutorAvatar(p.getUsuario_publicacion().getAvatar());
         dto.setGrupoId(p.getGrupo_publicacion().getGrupoID());
 
         dto.setLikeCount(p.getListaLikes() != null

@@ -13,6 +13,7 @@ public class PublicacionDTO {
     private Date fechaPublicacion;
     private Long autorId;
     private String autorNombre;
+    private String autorAvatar;
     private Long grupoId;
     private Long likeId;
     private int likeCount;
@@ -21,16 +22,17 @@ public class PublicacionDTO {
     public PublicacionDTO() {
     }
 
-    public PublicacionDTO(Long id, String contenido, Date fechaPublicacion, Long autorId, String autorNombre, Long grupoId, int likeCount, int comentarioCount, Long likeId) {
+    public PublicacionDTO(Long id, String contenido, Date fechaPublicacion, Long autorId, String autorNombre, String autorAvatar, Long grupoId, Long likeId, int likeCount, int comentarioCount) {
         this.id = id;
         this.contenido = contenido;
         this.fechaPublicacion = fechaPublicacion;
         this.autorId = autorId;
         this.autorNombre = autorNombre;
+        this.autorAvatar = autorAvatar;
         this.grupoId = grupoId;
+        this.likeId = likeId;
         this.likeCount = likeCount;
         this.comentarioCount = comentarioCount;
-        this.likeId = likeId;
     }
 
     public Long getId() {
@@ -71,6 +73,14 @@ public class PublicacionDTO {
 
     public void setAutorNombre(String autorNombre) {
         this.autorNombre = autorNombre;
+    }
+
+    public String getAutorAvatar() {
+        return autorAvatar;
+    }
+
+    public void setAutorAvatar(String autorAvatar) {
+        this.autorAvatar = autorAvatar;
     }
 
     public Long getGrupoId() {

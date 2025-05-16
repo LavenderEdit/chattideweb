@@ -8,6 +8,7 @@ import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import com.chattide.web.Utilities.Mensajes;
 
 import java.io.IOException;
+import java.io.File;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.MultipartConfig;
 
 /**
@@ -54,15 +54,24 @@ public class SvMiCuenta extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         usuario = us.findById(usuario.getUsuarioID());
 
-        ServletContext ctx = getServletContext();
-
         UsuarioDTO dto = UsuarioMapper.toDTO(usuario);
-        dto.setAvatar(SvUtils.normalizeAvatar(ctx, dto.getAvatar()));
-        session.setAttribute("usuarioDTO", dto);
 
-        getServletContext()
-                .getRequestDispatcher("/miCuenta.jsp")
-                .forward(request, response);
+        String avatarUrl = dto.getAvatar();
+        if (avatarUrl != null && !avatarUrl.isBlank()) {
+            String ctxPath = request.getContextPath();
+            String relPath = avatarUrl.startsWith(ctxPath)
+                    ? avatarUrl.substring(ctxPath.length())
+                    : avatarUrl;
+            String realPath = getServletContext().getRealPath(relPath);
+            if (realPath != null && new File(realPath).isFile()) {
+                dto.setAvatar(ctxPath + relPath + "?v=" + System.currentTimeMillis());
+            } else {
+                dto.setAvatar(null);
+            }
+        }
+
+        session.setAttribute("usuarioDTO", dto);
+        request.getRequestDispatcher("/miCuenta.jsp").forward(request, response);
     }
 
     @Override

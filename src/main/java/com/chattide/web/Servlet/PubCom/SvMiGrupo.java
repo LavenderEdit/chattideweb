@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.File;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,17 +64,47 @@ public class SvMiGrupo extends HttpServlet {
         }
 
         GrupoDTO grupoDto = grupoService.findDTOById(grupoId);
+
         Long usuarioId = ((Usuario) session.getAttribute("usuario")).getUsuarioID();
-        List<PublicacionDTO> publicaciones = publicacionService.findDTOByGrupoYUsuario(grupoId, usuarioId);
-        List<UsuarioDTO> miembros = usuarioGrupoService.findByGrupo(grupoId)
-                .stream()
+        List<PublicacionDTO> publicaciones = publicacionService
+                .findDTOByGrupoYUsuario(grupoId, usuarioId);
+
+        List<UsuarioDTO> miembros = usuarioGrupoService.findByGrupo(grupoId).stream()
                 .map(ug -> UsuarioMapper.toDTO(ug.getUsuario_grupo()))
                 .collect(Collectors.toList());
 
         ServletContext ctx = getServletContext();
+        String ctxPath = request.getContextPath();
+        long timestamp = System.currentTimeMillis();
 
-        for (UsuarioDTO udto : miembros) {
-            udto.setAvatar(SvUtils.normalizeAvatar(ctx, udto.getAvatar()));
+        for (UsuarioDTO u : miembros) {
+            String a = u.getAvatar();
+            if (a != null && !a.isBlank()) {
+                String rel = a.startsWith(ctxPath)
+                        ? a.substring(ctxPath.length())
+                        : a;
+                String realPath = ctx.getRealPath(rel);
+                if (realPath != null && new File(realPath).isFile()) {
+                    u.setAvatar(ctxPath + rel + "?v=" + timestamp);
+                } else {
+                    u.setAvatar(null);
+                }
+            }
+        }
+
+        for (PublicacionDTO p : publicaciones) {
+            String aa = p.getAutorAvatar();
+            if (aa != null && !aa.isBlank()) {
+                String rel = aa.startsWith(ctxPath)
+                        ? aa.substring(ctxPath.length())
+                        : aa;
+                String realPath = ctx.getRealPath(rel);
+                if (realPath != null && new File(realPath).isFile()) {
+                    p.setAutorAvatar(ctxPath + rel + "?v=" + timestamp);
+                } else {
+                    p.setAutorAvatar(null);
+                }
+            }
         }
 
         request.setAttribute("grupo", grupoDto);
