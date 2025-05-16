@@ -224,4 +224,17 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
             em.close();
         }
     }
+
+    public long countByUsuario(Long userId) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT COUNT(ug) FROM Usuario_Grupo ug WHERE ug.usuario_grupo.usuarioID = :uid",
+                    Long.class)
+                    .setParameter("uid", userId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }
