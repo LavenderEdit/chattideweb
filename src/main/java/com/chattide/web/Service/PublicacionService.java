@@ -2,14 +2,18 @@ package com.chattide.web.Service;
 
 import com.chattide.web.DTO.PublicacionDTO;
 import com.chattide.web.Mapper.PublicacionMapper;
+import com.chattide.web.Modelo.Likes;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Persistence.PublicacionJpaController;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,8 +28,12 @@ public class PublicacionService implements IPublicacionService {
     @Inject
     PublicacionJpaController publicacionJpaController;
 
+    @Inject
+    LikeService likeService;
+
     public PublicacionService() {
         this.publicacionJpaController = new PublicacionJpaController();
+        this.likeService = new LikeService();
     }
 
     @Override
@@ -86,5 +94,15 @@ public class PublicacionService implements IPublicacionService {
             Logger.getLogger(PublicacionService.class.getName())
                     .log(Level.SEVERE, "Error borrando Publicación", ex);
         }
+    }
+
+    @Override
+    public List<PublicacionDTO> findDTOByGrupoYUsuario(Long grupoId, Long usuarioId) {
+        List<PublicacionDTO> dtos = findDTOByGrupo(grupoId);
+        for (PublicacionDTO dto : dtos) {
+            Optional<Likes> opt = likeService.findByUserAndPublication(usuarioId, dto.getId());
+            dto.setLikeId(opt.map(Likes::getLikesID).orElse(null));
+        }
+        return dtos;
     }
 }
