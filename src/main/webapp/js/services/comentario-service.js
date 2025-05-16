@@ -16,6 +16,11 @@ export async function createCommentary(formData) {
 
 export async function fetchComentariosHtml(publicacionId) {
     const ctx = window.APP_CONTEXT_PATH || '';
-    const res = await fetch(`${ctx}/SvPublicacion?aj=1&id=${publicacionId}`);
+    const res = await fetch(`${ctx}/SvPublicacion?aj=1&id=${publicacionId}`, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+    });
+    if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+    }
     return res.text();
 }
