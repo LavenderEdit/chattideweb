@@ -17,15 +17,17 @@
                     ${pub.autorNombre}
                 </a>
                 &bull;
-                <fmt:formatDate value="${pub.fechaPublicacion}" pattern="dd/MM/yyyy HH:mm" />
+                <fmt:formatDate value="${pub.fechaPublicacion}" pattern="dd/MM/yyyy HH:mm"/>
             </small>
             <div class="mt-2 d-flex align-items-center">
                 <a href="${pageContext.request.contextPath}/SvPublicacion?id=${pub.id}"
                    class="btn btn-link me-3">
                     Ver Detalles
                 </a>
-                <button class="btn btn-outline-primary btn-sm me-2 like-btn"
-                        data-publicacion-id="${pub.id}">
+                <button class="btn btn-sm me-2 like-btn
+                        ${pub.likeId != null ? 'btn-primary liked' : 'btn-outline-primary'}"
+                        data-publicacion-id="${pub.id}"
+                        data-like-id="${pub.likeId}">
                     <i class="fas fa-thumbs-up"></i>
                     <span class="like-count">${pub.likeCount}</span>
                 </button>
@@ -36,3 +38,4 @@
         </div>
     </div>
 </c:forEach>
+
