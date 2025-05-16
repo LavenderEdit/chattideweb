@@ -28,6 +28,12 @@ public class Mensajes {
     public static final String USUARIO_DATOS_MODIFICADOS = "¡Los datos han sido modificados con éxito!";
     public static final String USUARIO_DATOS_DUPLICADOS = "No se han detectado cambios en los datos ingresados.";
 
+    // Mensajes de LIKE
+    public static final String LIKE = "¡Diste un like!";
+    public static final String NO_LIKE = "¡Like denegado!";
+    public static final String LIKE_YA_PUESTO = "¡Ya diste tu like!";
+    public static final String LIKE_QUITADO_YA = "¡Ya quitaste el like!";
+
     // Mensajes genéricos
     public static final String ERROR_SERVIDOR = "Ha ocurrido un error inesperado. Por favor, inténtelo más tarde.";
 }
