@@ -68,10 +68,4 @@
     </div>
 </div>
 
-<script>
-    function darLike(publicacionId) {
-        // lógica AJAX aquí
-    }
-</script>
-
 <%@ include file="footer.jsp" %>
