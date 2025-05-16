@@ -3,7 +3,6 @@ package com.chattide.web.Utilities.GlobalFunctions;
 import com.chattide.web.Modelo.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +21,8 @@ import java.util.regex.Pattern;
 import jakarta.servlet.http.HttpServletResponse;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import jakarta.servlet.http.Part;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -75,6 +76,17 @@ public class SvUtils {
             respondWithJson(resp, SC_BAD_REQUEST, false, "ID inválido: " + e.getMessage() + s, null);
             return null;
         }
+    }
+
+    public static String normalizeAvatar(ServletContext ctx, String avatarUrl) {
+        if (avatarUrl == null) {
+            return null;
+        }
+        String real = ctx.getRealPath(avatarUrl);
+        if (new File(real).isFile()) {
+            return avatarUrl;
+        }
+        return null;
     }
 
     /**
