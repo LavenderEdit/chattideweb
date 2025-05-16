@@ -10,7 +10,10 @@ import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -178,5 +181,37 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
             em.close();
         }
     }
-    
+
+    public Optional<Likes> findByUserAndPublication(Long userId, Long pubId) {
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Likes> q = em.createQuery(
+                    "SELECT l FROM Likes l "
+                    + " WHERE l.usuario_likes.usuarioID = :uid"
+                    + "   AND l.publicacion_likes.publicacionID = :pid",
+                    Likes.class
+            );
+            q.setParameter("uid", userId);
+            q.setParameter("pid", pubId);
+            Likes like = q.getSingleResult();
+            return Optional.of(like);
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Long countByPublication(Long pubId) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT COUNT(l) FROM Likes l WHERE l.publicacion_likes.publicacionID = :p",
+                    Long.class)
+                    .setParameter("p", pubId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }
