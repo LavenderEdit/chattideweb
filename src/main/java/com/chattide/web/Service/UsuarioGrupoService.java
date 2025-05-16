@@ -68,4 +68,10 @@ public class UsuarioGrupoService implements IUsuarioGrupoService {
     public boolean isMember(Long usuarioId, Long grupoId) {
         return ugc.findByUserAndGroup(usuarioId, grupoId) != null;
     }
+
+    @Override
+    public long countByUsuario(Long userId) {
+        return ugc.countByUsuario(userId);
+    }
+
 }
