@@ -105,4 +105,9 @@ public class PublicacionService implements IPublicacionService {
         }
         return dtos;
     }
+
+    @Override
+    public long countByUsuario(Long userId) {
+        return publicacionJpaController.countByUsuario(userId);
+    }
 }
