@@ -6,7 +6,10 @@ import com.chattide.web.Modelo.Grupo;
 import com.chattide.web.Persistence.GrupoJpaController;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
  *
  * @author Juan - Luis
  */
+@Named
 public class GrupoService implements IGrupoService {
 
     @Inject
