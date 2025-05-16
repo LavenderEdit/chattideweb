@@ -22,10 +22,12 @@
                         pattern="dd/MM/yyyy HH:mm"
                         />
                 </div>
-                <button id="btn-like" class="btn btn-outline-primary btn-sm">
+                <button class="btn btn-sm me-2 like-btn
+                        ${userLikeId != null ? 'btn-primary liked' : 'btn-outline-primary'}"
+                        data-publicacion-id="${publicacion.id}"
+                        data-like-id="${userLikeId}">
                     <i class="fas fa-thumbs-up"></i>
-                    Me gusta 
-                    <span id="likeCount">${publicacion.likeCount}</span>
+                    <span class="like-count">${publicacion.likeCount}</span>
                 </button>
             </div>
         </div>
@@ -43,17 +45,11 @@
 
         <!-- Contenedor de comentarios -->
         <div id="comentarios-container">
-          <jsp:include page="fragments/comentario-list.jsp">
-            <jsp:param name="listaComentarios" value="${listaComentarios}"/>
-          </jsp:include>
+            <jsp:include page="fragments/comentario-list.jsp">
+                <jsp:param name="listaComentarios" value="${listaComentarios}"/>
+            </jsp:include>
         </div>
 
     </div>
 </div>
-
-<script>
-    document.getElementById('btn-like').addEventListener('click', () => {
-        // tu lógica AJAX para dar like...
-    });
-</script>
 <%@ include file="footer.jsp" %>
