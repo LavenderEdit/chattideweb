@@ -18,4 +18,6 @@ public interface IUsuarioGrupoService {
     List<Usuario_Grupo> findByGrupo(Long grupoId);
 
     boolean isMember(Long usuarioId, Long grupoId);
+
+    long countByUsuario(Long userId);
 }
