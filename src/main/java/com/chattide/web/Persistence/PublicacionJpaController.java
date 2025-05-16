@@ -294,4 +294,17 @@ public class PublicacionJpaController extends AbstractJpaController implements S
             em.close();
         }
     }
+
+    public long countByUsuario(Long userId) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT COUNT(p) FROM Publicacion p WHERE p.usuario_publicacion.usuarioID = :uid",
+                    Long.class)
+                    .setParameter("uid", userId)
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
 }
