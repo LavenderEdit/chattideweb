@@ -4,13 +4,14 @@ import com.chattide.web.DTO.GrupoDTO;
 import com.chattide.web.DTO.PublicacionDTO;
 import com.chattide.web.DTO.UsuarioDTO;
 import com.chattide.web.Mapper.UsuarioMapper;
+import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.GrupoService;
 import com.chattide.web.Service.PublicacionService;
 import com.chattide.web.Service.UsuarioGrupoService;
-import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 
 import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -36,17 +37,13 @@ public class SvMiGrupo extends HttpServlet {
     UsuarioGrupoService usuarioGrupoService;
 
     @Inject
-    UsuarioService usuarioService;
-    
-    @Inject
     PublicacionService publicacionService;
 
     @Override
     public void init() throws ServletException {
         this.grupoService = new GrupoService();
         this.usuarioGrupoService = new UsuarioGrupoService();
-        this.usuarioService = new UsuarioService();
-        this.publicacionService   = new PublicacionService();
+        this.publicacionService = new PublicacionService();
     }
 
     @Override
@@ -61,14 +58,23 @@ public class SvMiGrupo extends HttpServlet {
         }
 
         Long grupoId = SvUtils.parseLongParam(request, "id", response);
-        if (grupoId == null) return;
+        if (grupoId == null) {
+            return;
+        }
 
         GrupoDTO grupoDto = grupoService.findDTOById(grupoId);
-        List<PublicacionDTO> publicaciones = publicacionService.findDTOByGrupo(grupoId);
+        Long usuarioId = ((Usuario) session.getAttribute("usuario")).getUsuarioID();
+        List<PublicacionDTO> publicaciones = publicacionService.findDTOByGrupoYUsuario(grupoId, usuarioId);
         List<UsuarioDTO> miembros = usuarioGrupoService.findByGrupo(grupoId)
-                                      .stream()
-                                      .map(ug -> UsuarioMapper.toDTO(ug.getUsuario_grupo()))
-                                      .collect(Collectors.toList());
+                .stream()
+                .map(ug -> UsuarioMapper.toDTO(ug.getUsuario_grupo()))
+                .collect(Collectors.toList());
+
+        ServletContext ctx = getServletContext();
+
+        for (UsuarioDTO udto : miembros) {
+            udto.setAvatar(SvUtils.normalizeAvatar(ctx, udto.getAvatar()));
+        }
 
         request.setAttribute("grupo", grupoDto);
         request.setAttribute("listaPublicaciones", publicaciones);
@@ -76,10 +82,10 @@ public class SvMiGrupo extends HttpServlet {
 
         if ("1".equals(request.getParameter("aj"))) {
             request.getRequestDispatcher("/fragments/publicacion-card.jsp")
-               .forward(request, response);
+                    .forward(request, response);
         } else {
             request.getRequestDispatcher("/miGrupo.jsp")
-               .forward(request, response);
+                    .forward(request, response);
         }
     }
 }

@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.MultipartConfig;
 
 /**
@@ -53,7 +54,10 @@ public class SvMiCuenta extends HttpServlet {
         Usuario usuario = (Usuario) session.getAttribute("usuario");
         usuario = us.findById(usuario.getUsuarioID());
 
+        ServletContext ctx = getServletContext();
+
         UsuarioDTO dto = UsuarioMapper.toDTO(usuario);
+        dto.setAvatar(SvUtils.normalizeAvatar(ctx, dto.getAvatar()));
         session.setAttribute("usuarioDTO", dto);
 
         getServletContext()

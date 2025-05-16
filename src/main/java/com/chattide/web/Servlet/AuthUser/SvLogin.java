@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -52,6 +53,8 @@ public class SvLogin extends HttpServlet {
         Usuario user = optUsuario.get();
 
         if (user.checkContrasenia(contra)) {
+            ServletContext ctx = getServletContext();
+            user.setAvatar(SvUtils.normalizeAvatar(ctx, user.getAvatar()));
             request.getSession().setAttribute("usuario", user);
 
             SvUtils.respondWithSuccess(
