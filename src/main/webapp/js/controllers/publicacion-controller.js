@@ -1,5 +1,6 @@
 import { createPublication, fetchPublicacionesHtml } from '../services/publicacion-service.js';
 import { showToast } from '../components/toast-notification.js';
+import { initLikeButtons } from './like-controller.js';
 
 const PublicacionController = {
     init(grupoId) {
@@ -20,6 +21,7 @@ const PublicacionController = {
         try {
             const html = await fetchPublicacionesHtml(this.grupoId);
             document.getElementById('publicaciones-container').innerHTML = html;
+            initLikeButtons();
         } catch (err) {
             console.error('Error refrescando publicaciones:', err);
         }
@@ -34,8 +36,11 @@ const PublicacionController = {
             const {status, body} = await createPublication(data);
             if (status === 200 && body.success) {
                 showToast({title: '¡Listo!', message: body.message, type: 'success'});
+                const html = await fetchPublicacionesHtml(this.grupoId);
+                const container = document.getElementById('publicaciones-container');
+                container.innerHTML = html;
                 form.reset();
-                this.refreshPublicaciones();
+                initLikeButtons();
             } else {
                 showToast({title: 'Error', message: body.message || 'No se creó', type: 'danger'});
             }
