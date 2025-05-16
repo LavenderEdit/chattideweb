@@ -26,14 +26,12 @@
                             <img src="${c.avatarUsuarioUrl}"
                                  alt="${c.usuarioNombre}"
                                  class="rounded-circle avatar-bg"
-                                 onerror="this.onerror=null;
-                                 this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
+                                 onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
                         </c:when>
                         <c:otherwise>
                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
-                                 alt="Avatar por defecto"
-                                 class="rounded-circle"
-                                 width="40" height="40"/>
+                                 alt="${c.usuarioNombre}"
+                                 class="rounded-circle avatar-bg"/>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -49,3 +47,4 @@
         </c:forEach>
     </c:otherwise>
 </c:choose>
+
