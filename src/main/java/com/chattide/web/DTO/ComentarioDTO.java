@@ -1,5 +1,6 @@
 package com.chattide.web.DTO;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ public class ComentarioDTO {
 
     private Long id;
     private String contenido;
-    private Date fechaComentario;
+    private Instant fechaComentario;
     private Long publicacionId;
     private Long usuarioId;
     private String usuarioNombre;
@@ -19,14 +20,14 @@ public class ComentarioDTO {
     public ComentarioDTO() {
     }
 
-    public ComentarioDTO(Long id, String contenido, Date fechaComentario, Long publicacionId, Long usuarioId, String usuarioNombre, String auu) {
+    public ComentarioDTO(Long id, String contenido, Instant fechaComentario, Long publicacionId, Long usuarioId, String usuarioNombre, String avatarUsuarioUrl) {
         this.id = id;
         this.contenido = contenido;
         this.fechaComentario = fechaComentario;
         this.publicacionId = publicacionId;
         this.usuarioId = usuarioId;
         this.usuarioNombre = usuarioNombre;
-        this.avatarUsuarioUrl = auu;
+        this.avatarUsuarioUrl = avatarUsuarioUrl;
     }
 
     public Long getId() {
@@ -46,10 +47,12 @@ public class ComentarioDTO {
     }
 
     public Date getFechaComentario() {
-        return fechaComentario;
+        return (fechaComentario != null)
+               ? Date.from(fechaComentario)
+               : null;
     }
 
-    public void setFechaComentario(Date fechaComentario) {
+    public void setFechaComentario(Instant fechaComentario) {
         this.fechaComentario = fechaComentario;
     }
 
