@@ -3,6 +3,7 @@ package com.chattide.web.Service;
 import com.chattide.web.DTO.GrupoDTO;
 import com.chattide.web.Mapper.GrupoMapper;
 import com.chattide.web.Modelo.Grupo;
+import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Persistence.GrupoJpaController;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
@@ -43,8 +44,14 @@ public class GrupoService implements IGrupoService {
 
     @Override
     public boolean create(Grupo entity) {
+        Logger.getLogger(GrupoService.class.getName()).log(Level.FINE, "Método no implementado");
+        return false;
+    }
+
+    @Override
+    public boolean createGrupoWithConnection(Grupo grupo, Usuario creador) {
         try {
-            grupoJpaController.create(entity);
+            grupoJpaController.create(grupo, creador);
             return true;
         } catch (Exception ex) {
             Logger.getLogger(GrupoService.class.getName())
