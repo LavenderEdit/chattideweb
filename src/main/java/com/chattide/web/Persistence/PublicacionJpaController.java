@@ -8,12 +8,15 @@ import jakarta.persistence.criteria.Root;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Modelo.Grupo;
 import com.chattide.web.Modelo.Comentario;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import com.chattide.web.Modelo.Likes;
 import com.chattide.web.Modelo.Publicacion;
+import com.chattide.web.Persistence.exceptions.IllegalOrphanException;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -22,63 +25,63 @@ import jakarta.persistence.EntityManager;
 public class PublicacionJpaController extends AbstractJpaController implements Serializable {
 
     public void create(Publicacion publicacion) {
-        if (publicacion.getListaComentarios() == null) {
-            publicacion.setListaComentarios(new ArrayList<Comentario>());
+        if (publicacion.getComentarios() == null) {
+            publicacion.setComentarios(new HashSet<Comentario>());
         }
-        if (publicacion.getListaLikes() == null) {
-            publicacion.setListaLikes(new ArrayList<Likes>());
+        if (publicacion.getLikes() == null) {
+            publicacion.setLikes(new HashSet<Likes>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario_publicacion = publicacion.getUsuario_publicacion();
-            if (usuario_publicacion != null) {
-                usuario_publicacion = em.getReference(usuario_publicacion.getClass(), usuario_publicacion.getUsuarioID());
-                publicacion.setUsuario_publicacion(usuario_publicacion);
+            Usuario autor = publicacion.getAutor();
+            if (autor != null) {
+                autor = em.getReference(autor.getClass(), autor.getUsuarioID());
+                publicacion.setAutor(autor);
             }
-            Grupo grupo_publicacion = publicacion.getGrupo_publicacion();
-            if (grupo_publicacion != null) {
-                grupo_publicacion = em.getReference(grupo_publicacion.getClass(), grupo_publicacion.getGrupoID());
-                publicacion.setGrupo_publicacion(grupo_publicacion);
+            Grupo grupo = publicacion.getGrupo();
+            if (grupo != null) {
+                grupo = em.getReference(grupo.getClass(), grupo.getGrupoID());
+                publicacion.setGrupo(grupo);
             }
-            List<Comentario> attachedListaComentarios = new ArrayList<Comentario>();
-            for (Comentario listaComentariosComentarioToAttach : publicacion.getListaComentarios()) {
-                listaComentariosComentarioToAttach = em.getReference(listaComentariosComentarioToAttach.getClass(), listaComentariosComentarioToAttach.getComentarioID());
-                attachedListaComentarios.add(listaComentariosComentarioToAttach);
+            Set<Comentario> attachedComentarios = new HashSet<Comentario>();
+            for (Comentario comentariosComentarioToAttach : publicacion.getComentarios()) {
+                comentariosComentarioToAttach = em.getReference(comentariosComentarioToAttach.getClass(), comentariosComentarioToAttach.getComentarioID());
+                attachedComentarios.add(comentariosComentarioToAttach);
             }
-            publicacion.setListaComentarios(attachedListaComentarios);
-            List<Likes> attachedListaLikes = new ArrayList<Likes>();
-            for (Likes listaLikesLikesToAttach : publicacion.getListaLikes()) {
-                listaLikesLikesToAttach = em.getReference(listaLikesLikesToAttach.getClass(), listaLikesLikesToAttach.getLikesID());
-                attachedListaLikes.add(listaLikesLikesToAttach);
+            publicacion.setComentarios(attachedComentarios);
+            Set<Likes> attachedLikes = new HashSet<Likes>();
+            for (Likes likesLikesToAttach : publicacion.getLikes()) {
+                likesLikesToAttach = em.getReference(likesLikesToAttach.getClass(), likesLikesToAttach.getLikesID());
+                attachedLikes.add(likesLikesToAttach);
             }
-            publicacion.setListaLikes(attachedListaLikes);
+            publicacion.setLikes(attachedLikes);
             em.persist(publicacion);
-            if (usuario_publicacion != null) {
-                usuario_publicacion.getListaPublicacion().add(publicacion);
-                usuario_publicacion = em.merge(usuario_publicacion);
+            if (autor != null) {
+                autor.getPublicaciones().add(publicacion);
+                autor = em.merge(autor);
             }
-            if (grupo_publicacion != null) {
-                grupo_publicacion.getListaPublicacion().add(publicacion);
-                grupo_publicacion = em.merge(grupo_publicacion);
+            if (grupo != null) {
+                grupo.getPublicaciones().add(publicacion);
+                grupo = em.merge(grupo);
             }
-            for (Comentario listaComentariosComentario : publicacion.getListaComentarios()) {
-                Publicacion oldPublicacion_comentarioOfListaComentariosComentario = listaComentariosComentario.getPublicacion_comentario();
-                listaComentariosComentario.setPublicacion_comentario(publicacion);
-                listaComentariosComentario = em.merge(listaComentariosComentario);
-                if (oldPublicacion_comentarioOfListaComentariosComentario != null) {
-                    oldPublicacion_comentarioOfListaComentariosComentario.getListaComentarios().remove(listaComentariosComentario);
-                    oldPublicacion_comentarioOfListaComentariosComentario = em.merge(oldPublicacion_comentarioOfListaComentariosComentario);
+            for (Comentario comentariosComentario : publicacion.getComentarios()) {
+                Publicacion oldPublicacionOfComentariosComentario = comentariosComentario.getPublicacion();
+                comentariosComentario.setPublicacion(publicacion);
+                comentariosComentario = em.merge(comentariosComentario);
+                if (oldPublicacionOfComentariosComentario != null) {
+                    oldPublicacionOfComentariosComentario.getComentarios().remove(comentariosComentario);
+                    oldPublicacionOfComentariosComentario = em.merge(oldPublicacionOfComentariosComentario);
                 }
             }
-            for (Likes listaLikesLikes : publicacion.getListaLikes()) {
-                Publicacion oldPublicacion_likesOfListaLikesLikes = listaLikesLikes.getPublicacion_likes();
-                listaLikesLikes.setPublicacion_likes(publicacion);
-                listaLikesLikes = em.merge(listaLikesLikes);
-                if (oldPublicacion_likesOfListaLikesLikes != null) {
-                    oldPublicacion_likesOfListaLikesLikes.getListaLikes().remove(listaLikesLikes);
-                    oldPublicacion_likesOfListaLikesLikes = em.merge(oldPublicacion_likesOfListaLikesLikes);
+            for (Likes likesLikes : publicacion.getLikes()) {
+                Publicacion oldPublicacionOfLikesLikes = likesLikes.getPublicacion();
+                likesLikes.setPublicacion(publicacion);
+                likesLikes = em.merge(likesLikes);
+                if (oldPublicacionOfLikesLikes != null) {
+                    oldPublicacionOfLikesLikes.getLikes().remove(likesLikes);
+                    oldPublicacionOfLikesLikes = em.merge(oldPublicacionOfLikesLikes);
                 }
             }
             em.getTransaction().commit();
@@ -89,90 +92,98 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         }
     }
 
-    public void edit(Publicacion publicacion) throws NonexistentEntityException, Exception {
+    public void edit(Publicacion publicacion) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             Publicacion persistentPublicacion = em.find(Publicacion.class, publicacion.getPublicacionID());
-            Usuario usuario_publicacionOld = persistentPublicacion.getUsuario_publicacion();
-            Usuario usuario_publicacionNew = publicacion.getUsuario_publicacion();
-            Grupo grupo_publicacionOld = persistentPublicacion.getGrupo_publicacion();
-            Grupo grupo_publicacionNew = publicacion.getGrupo_publicacion();
-            List<Comentario> listaComentariosOld = persistentPublicacion.getListaComentarios();
-            List<Comentario> listaComentariosNew = publicacion.getListaComentarios();
-            List<Likes> listaLikesOld = persistentPublicacion.getListaLikes();
-            List<Likes> listaLikesNew = publicacion.getListaLikes();
-            if (usuario_publicacionNew != null) {
-                usuario_publicacionNew = em.getReference(usuario_publicacionNew.getClass(), usuario_publicacionNew.getUsuarioID());
-                publicacion.setUsuario_publicacion(usuario_publicacionNew);
-            }
-            if (grupo_publicacionNew != null) {
-                grupo_publicacionNew = em.getReference(grupo_publicacionNew.getClass(), grupo_publicacionNew.getGrupoID());
-                publicacion.setGrupo_publicacion(grupo_publicacionNew);
-            }
-            List<Comentario> attachedListaComentariosNew = new ArrayList<Comentario>();
-            for (Comentario listaComentariosNewComentarioToAttach : listaComentariosNew) {
-                listaComentariosNewComentarioToAttach = em.getReference(listaComentariosNewComentarioToAttach.getClass(), listaComentariosNewComentarioToAttach.getComentarioID());
-                attachedListaComentariosNew.add(listaComentariosNewComentarioToAttach);
-            }
-            listaComentariosNew = attachedListaComentariosNew;
-            publicacion.setListaComentarios(listaComentariosNew);
-            List<Likes> attachedListaLikesNew = new ArrayList<Likes>();
-            for (Likes listaLikesNewLikesToAttach : listaLikesNew) {
-                listaLikesNewLikesToAttach = em.getReference(listaLikesNewLikesToAttach.getClass(), listaLikesNewLikesToAttach.getLikesID());
-                attachedListaLikesNew.add(listaLikesNewLikesToAttach);
-            }
-            listaLikesNew = attachedListaLikesNew;
-            publicacion.setListaLikes(listaLikesNew);
-            publicacion = em.merge(publicacion);
-            if (usuario_publicacionOld != null && !usuario_publicacionOld.equals(usuario_publicacionNew)) {
-                usuario_publicacionOld.getListaPublicacion().remove(publicacion);
-                usuario_publicacionOld = em.merge(usuario_publicacionOld);
-            }
-            if (usuario_publicacionNew != null && !usuario_publicacionNew.equals(usuario_publicacionOld)) {
-                usuario_publicacionNew.getListaPublicacion().add(publicacion);
-                usuario_publicacionNew = em.merge(usuario_publicacionNew);
-            }
-            if (grupo_publicacionOld != null && !grupo_publicacionOld.equals(grupo_publicacionNew)) {
-                grupo_publicacionOld.getListaPublicacion().remove(publicacion);
-                grupo_publicacionOld = em.merge(grupo_publicacionOld);
-            }
-            if (grupo_publicacionNew != null && !grupo_publicacionNew.equals(grupo_publicacionOld)) {
-                grupo_publicacionNew.getListaPublicacion().add(publicacion);
-                grupo_publicacionNew = em.merge(grupo_publicacionNew);
-            }
-            for (Comentario listaComentariosOldComentario : listaComentariosOld) {
-                if (!listaComentariosNew.contains(listaComentariosOldComentario)) {
-                    listaComentariosOldComentario.setPublicacion_comentario(null);
-                    listaComentariosOldComentario = em.merge(listaComentariosOldComentario);
+            Usuario autorOld = persistentPublicacion.getAutor();
+            Usuario autorNew = publicacion.getAutor();
+            Grupo grupoOld = persistentPublicacion.getGrupo();
+            Grupo grupoNew = publicacion.getGrupo();
+            Set<Comentario> comentariosOld = persistentPublicacion.getComentarios();
+            Set<Comentario> comentariosNew = publicacion.getComentarios();
+            Set<Likes> likesOld = persistentPublicacion.getLikes();
+            Set<Likes> likesNew = publicacion.getLikes();
+            List<String> illegalOrphanMessages = null;
+            for (Comentario comentariosOldComentario : comentariosOld) {
+                if (!comentariosNew.contains(comentariosOldComentario)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Comentario " + comentariosOldComentario + " since its publicacion field is not nullable.");
                 }
             }
-            for (Comentario listaComentariosNewComentario : listaComentariosNew) {
-                if (!listaComentariosOld.contains(listaComentariosNewComentario)) {
-                    Publicacion oldPublicacion_comentarioOfListaComentariosNewComentario = listaComentariosNewComentario.getPublicacion_comentario();
-                    listaComentariosNewComentario.setPublicacion_comentario(publicacion);
-                    listaComentariosNewComentario = em.merge(listaComentariosNewComentario);
-                    if (oldPublicacion_comentarioOfListaComentariosNewComentario != null && !oldPublicacion_comentarioOfListaComentariosNewComentario.equals(publicacion)) {
-                        oldPublicacion_comentarioOfListaComentariosNewComentario.getListaComentarios().remove(listaComentariosNewComentario);
-                        oldPublicacion_comentarioOfListaComentariosNewComentario = em.merge(oldPublicacion_comentarioOfListaComentariosNewComentario);
+            for (Likes likesOldLikes : likesOld) {
+                if (!likesNew.contains(likesOldLikes)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Likes " + likesOldLikes + " since its publicacion field is not nullable.");
+                }
+            }
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            if (autorNew != null) {
+                autorNew = em.getReference(autorNew.getClass(), autorNew.getUsuarioID());
+                publicacion.setAutor(autorNew);
+            }
+            if (grupoNew != null) {
+                grupoNew = em.getReference(grupoNew.getClass(), grupoNew.getGrupoID());
+                publicacion.setGrupo(grupoNew);
+            }
+            Set<Comentario> attachedComentariosNew = new HashSet<Comentario>();
+            for (Comentario comentariosNewComentarioToAttach : comentariosNew) {
+                comentariosNewComentarioToAttach = em.getReference(comentariosNewComentarioToAttach.getClass(), comentariosNewComentarioToAttach.getComentarioID());
+                attachedComentariosNew.add(comentariosNewComentarioToAttach);
+            }
+            comentariosNew = attachedComentariosNew;
+            publicacion.setComentarios(comentariosNew);
+            Set<Likes> attachedLikesNew = new HashSet<Likes>();
+            for (Likes likesNewLikesToAttach : likesNew) {
+                likesNewLikesToAttach = em.getReference(likesNewLikesToAttach.getClass(), likesNewLikesToAttach.getLikesID());
+                attachedLikesNew.add(likesNewLikesToAttach);
+            }
+            likesNew = attachedLikesNew;
+            publicacion.setLikes(likesNew);
+            publicacion = em.merge(publicacion);
+            if (autorOld != null && !autorOld.equals(autorNew)) {
+                autorOld.getPublicaciones().remove(publicacion);
+                autorOld = em.merge(autorOld);
+            }
+            if (autorNew != null && !autorNew.equals(autorOld)) {
+                autorNew.getPublicaciones().add(publicacion);
+                autorNew = em.merge(autorNew);
+            }
+            if (grupoOld != null && !grupoOld.equals(grupoNew)) {
+                grupoOld.getPublicaciones().remove(publicacion);
+                grupoOld = em.merge(grupoOld);
+            }
+            if (grupoNew != null && !grupoNew.equals(grupoOld)) {
+                grupoNew.getPublicaciones().add(publicacion);
+                grupoNew = em.merge(grupoNew);
+            }
+            for (Comentario comentariosNewComentario : comentariosNew) {
+                if (!comentariosOld.contains(comentariosNewComentario)) {
+                    Publicacion oldPublicacionOfComentariosNewComentario = comentariosNewComentario.getPublicacion();
+                    comentariosNewComentario.setPublicacion(publicacion);
+                    comentariosNewComentario = em.merge(comentariosNewComentario);
+                    if (oldPublicacionOfComentariosNewComentario != null && !oldPublicacionOfComentariosNewComentario.equals(publicacion)) {
+                        oldPublicacionOfComentariosNewComentario.getComentarios().remove(comentariosNewComentario);
+                        oldPublicacionOfComentariosNewComentario = em.merge(oldPublicacionOfComentariosNewComentario);
                     }
                 }
             }
-            for (Likes listaLikesOldLikes : listaLikesOld) {
-                if (!listaLikesNew.contains(listaLikesOldLikes)) {
-                    listaLikesOldLikes.setPublicacion_likes(null);
-                    listaLikesOldLikes = em.merge(listaLikesOldLikes);
-                }
-            }
-            for (Likes listaLikesNewLikes : listaLikesNew) {
-                if (!listaLikesOld.contains(listaLikesNewLikes)) {
-                    Publicacion oldPublicacion_likesOfListaLikesNewLikes = listaLikesNewLikes.getPublicacion_likes();
-                    listaLikesNewLikes.setPublicacion_likes(publicacion);
-                    listaLikesNewLikes = em.merge(listaLikesNewLikes);
-                    if (oldPublicacion_likesOfListaLikesNewLikes != null && !oldPublicacion_likesOfListaLikesNewLikes.equals(publicacion)) {
-                        oldPublicacion_likesOfListaLikesNewLikes.getListaLikes().remove(listaLikesNewLikes);
-                        oldPublicacion_likesOfListaLikesNewLikes = em.merge(oldPublicacion_likesOfListaLikesNewLikes);
+            for (Likes likesNewLikes : likesNew) {
+                if (!likesOld.contains(likesNewLikes)) {
+                    Publicacion oldPublicacionOfLikesNewLikes = likesNewLikes.getPublicacion();
+                    likesNewLikes.setPublicacion(publicacion);
+                    likesNewLikes = em.merge(likesNewLikes);
+                    if (oldPublicacionOfLikesNewLikes != null && !oldPublicacionOfLikesNewLikes.equals(publicacion)) {
+                        oldPublicacionOfLikesNewLikes.getLikes().remove(likesNewLikes);
+                        oldPublicacionOfLikesNewLikes = em.merge(oldPublicacionOfLikesNewLikes);
                     }
                 }
             }
@@ -180,7 +191,7 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                long id = publicacion.getPublicacionID();
+                Long id = publicacion.getPublicacionID();
                 if (findPublicacion(id) == null) {
                     throw new NonexistentEntityException("The publicacion with id " + id + " no longer exists.");
                 }
@@ -193,7 +204,7 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         }
     }
 
-    public void destroy(long id) throws NonexistentEntityException {
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -203,29 +214,31 @@ public class PublicacionJpaController extends AbstractJpaController implements S
                 publicacion = em.getReference(Publicacion.class, id);
                 publicacion.getPublicacionID();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The publicacion with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("La publicación con id " + id + " ya no existe.", enfe);
             }
-            Usuario usuario_publicacion = publicacion.getUsuario_publicacion();
-            if (usuario_publicacion != null) {
-                usuario_publicacion.getListaPublicacion().remove(publicacion);
-                usuario_publicacion = em.merge(usuario_publicacion);
+
+            for (Comentario comentario : new HashSet<>(publicacion.getComentarios())) {
+                em.remove(em.contains(comentario) ? comentario : em.merge(comentario));
             }
-            Grupo grupo_publicacion = publicacion.getGrupo_publicacion();
-            if (grupo_publicacion != null) {
-                grupo_publicacion.getListaPublicacion().remove(publicacion);
-                grupo_publicacion = em.merge(grupo_publicacion);
+
+            for (Likes like : new HashSet<>(publicacion.getLikes())) {
+                em.remove(em.contains(like) ? like : em.merge(like));
             }
-            List<Comentario> listaComentarios = publicacion.getListaComentarios();
-            for (Comentario listaComentariosComentario : listaComentarios) {
-                listaComentariosComentario.setPublicacion_comentario(null);
-                listaComentariosComentario = em.merge(listaComentariosComentario);
+
+            Usuario autor = publicacion.getAutor();
+            if (autor != null) {
+                autor.getPublicaciones().remove(publicacion);
+                em.merge(autor);
             }
-            List<Likes> listaLikes = publicacion.getListaLikes();
-            for (Likes listaLikesLikes : listaLikes) {
-                listaLikesLikes.setPublicacion_likes(null);
-                listaLikesLikes = em.merge(listaLikesLikes);
+
+            Grupo grupo = publicacion.getGrupo();
+            if (grupo != null) {
+                grupo.getPublicaciones().remove(publicacion);
+                em.merge(grupo);
             }
-            em.remove(publicacion);
+
+            em.remove(em.contains(publicacion) ? publicacion : em.merge(publicacion));
+
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -258,25 +271,10 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         }
     }
 
-    public Publicacion findPublicacion(long id) {
+    public Publicacion findPublicacion(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Publicacion.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    public List<Publicacion> findByGrupo(Long grupoId) {
-        var em = getEntityManager();
-        try {
-            return em.createQuery(
-                    "SELECT p FROM Publicacion p "
-                    + "WHERE p.grupo_publicacion.grupoID = :gid "
-                    + "ORDER BY p.fechaPublicacion DESC",
-                    Publicacion.class)
-                    .setParameter("gid", grupoId)
-                    .getResultList();
         } finally {
             em.close();
         }
@@ -295,12 +293,29 @@ public class PublicacionJpaController extends AbstractJpaController implements S
         }
     }
 
-    public long countByUsuario(Long userId) {
+    public List<Publicacion> findByGrupo(Long grupoId) {
         var em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT COUNT(p) FROM Publicacion p WHERE p.usuario_publicacion.usuarioID = :uid",
-                    Long.class)
+                    "SELECT p FROM Publicacion p "
+                    + "WHERE p.grupo.grupoID = :gid "
+                    + "ORDER BY p.fechaPublicacion DESC",
+                    Publicacion.class
+            )
+                    .setParameter("gid", grupoId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Long countByUsuario(Long userId) {
+        var em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT COUNT(p) FROM Publicacion p WHERE p.autor.usuarioID = :uid",
+                    Long.class
+            )
                     .setParameter("uid", userId)
                     .getSingleResult();
         } finally {
