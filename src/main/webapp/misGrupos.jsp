@@ -1,3 +1,10 @@
+<%-- 
+    Document   : misGrupos
+    Created on : 11 mar. 2025, 21:02:15
+    Author     : Juan - Luis
+--%>
+
+
 <%@ include file="header.jsp" %>
 
 <h2 class="mb-4">Mis Grupos</h2>
