@@ -77,7 +77,7 @@ public class SvPublicacion extends HttpServlet {
         ServletContext ctx = getServletContext();
 
         for (ComentarioDTO c : comentarios) {
-            c.setAvatarUsuarioUrl(SvUtils.normalizeAvatar(ctx, c.getAvatarUsuarioUrl()));
+            c.setAvatarUsuarioUrl(SvUtils.normalizeAvatarLogin(ctx, c.getAvatarUsuarioUrl()));
         }
 
         request.setAttribute("publicacion", pubDto);
