@@ -1,6 +1,6 @@
 import { togglePasswordVisibility, checkArchiveSizeAndType } from './lib/utils/script-functions.js?v=1';
 import UsuarioController from './controllers/usuario-controller.js?v=1';
-import { initExitGroupButtons }     from './controllers/grupo-controller.js';
+import { initExitGroupButtons, initCreateGroupForm }     from './controllers/grupo-controller.js';
 import PublicacionController        from './controllers/publicacion-controller.js?v=1';
 import ComentarioController         from './controllers/comentario-controller.js?v=2';
 import { initLikeButtons }          from './controllers/like-controller.js';
@@ -51,6 +51,9 @@ export function runComponentRegistry() {
                 ComentarioController.init(pid);
                 initLikeButtons();
             }
+            break;
+        case 'crearGrupo.jsp':
+            initCreateGroupForm();
             break;
         default:
         // nada
