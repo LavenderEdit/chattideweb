@@ -25,8 +25,7 @@
                         <c:when test="${not empty c.avatarUsuarioUrl}">
                             <img src="${c.avatarUsuarioUrl}"
                                  alt="${c.usuarioNombre}"
-                                 class="rounded-circle avatar-bg"
-                                 onerror="this.onerror=null; this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
+                                 class="rounded-circle avatar-bg"/>
                         </c:when>
                         <c:otherwise>
                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
