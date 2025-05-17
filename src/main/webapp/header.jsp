@@ -33,12 +33,16 @@
                 }
             });
         </script>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top border-bottom">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="${pageContext.request.contextPath}/index.jsp">
+                <!-- Marca más destacada -->
+                <a class="navbar-brand fw-bold fs-3 text-primary" 
+                   href="${pageContext.request.contextPath}/index.jsp">
                     Chattide
                 </a>
-                <button class="navbar-toggler" type="button"
+
+                <!-- Toggler con más padding -->
+                <button class="navbar-toggler p-2" type="button"
                         data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false"
                         aria-label="Toggle navigation">
@@ -46,45 +50,48 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav ms-auto align-items-center">
+                    <ul class="navbar-nav ms-auto align-items-center gap-3">
 
-                        <%-- Si no hay usuario logeado --%>
+                        <!-- Estado anónimo -->
                         <c:if test="${empty sessionScope.usuario}">
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/login.jsp">
+                                <a class="nav-link px-3 py-2 rounded" 
+                                   href="${pageContext.request.contextPath}/login.jsp">
                                     Iniciar Sesión
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/registro.jsp">
+                                <a class="nav-link px-3 py-2 rounded"
+                                   href="${pageContext.request.contextPath}/registro.jsp">
                                     Registrarse
                                 </a>
                             </li>
                         </c:if>
 
-                        <%-- Si hay usuario logeado --%>
+                        <!-- Usuario autenticado -->
                         <c:if test="${not empty sessionScope.usuario}">
-                            <%-- Dropdown de Grupos --%>
+                            <!-- Dropdown Grupos -->
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="groupsDropdown"
-                                   role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Grupos
+                                <a class="nav-link dropdown-toggle px-3 py-2 rounded" href="#" 
+                                   id="groupsDropdown" role="button" data-bs-toggle="dropdown"
+                                   aria-expanded="false">
+                                    <i class="fas fa-users me-1"></i> Grupos
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="groupsDropdown">
+                                <ul class="dropdown-menu shadow-sm" aria-labelledby="groupsDropdown">
                                     <li>
-                                        <a class="dropdown-item"
+                                        <a class="dropdown-item" 
                                            href="${pageContext.request.contextPath}/SvMisGrupos">
                                             Mis Grupos
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item"
+                                        <a class="dropdown-item" 
                                            href="${pageContext.request.contextPath}/SvBuscarGrupos">
                                             Buscar Grupos
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item"
+                                        <a class="dropdown-item" 
                                            href="${pageContext.request.contextPath}/crearGrupo.jsp">
                                             Crear Grupo
                                         </a>
@@ -92,39 +99,35 @@
                                 </ul>
                             </li>
 
-                            <%-- Perfil de usuario con dropdown --%>
+                            <!-- Dropdown usuario -->
                             <c:set var="user" value="${sessionScope.usuario}" />
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle d-flex align-items-center"
-                                   href="#" id="userDropdown" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center px-3 py-2 rounded" href="#" 
+                                   id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <c:choose>
                                         <c:when test="${not empty user.avatar}">
-                                            <img src="${user.avatar}"
-                                                 alt="Avatar"
-                                                 class="rounded-circle me-2 avatar-bg"/>
+                                            <div class="avatar-bg me-2" 
+                                                 style="background-image:url('${user.avatar}');"></div>
                                         </c:when>
                                         <c:otherwise>
                                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
-                                                 alt="Avatar"
-                                                 class="rounded-circle me-2"
-                                                 width="30" height="30"/>
+                                                 alt="Avatar" class="rounded-circle me-2 avatar-bg"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    ${user.nombre}
+                                    <span class="fw-medium text-dark">${user.nombre}</span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                                     <li>
-                                        <a class="dropdown-item"
+                                        <a class="dropdown-item" 
                                            href="${pageContext.request.contextPath}/SvMiCuenta">
-                                            Mi Cuenta
+                                            <i class="fas fa-user-cog me-2"></i> Mi Cuenta
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"/></li>
                                     <li>
-                                        <a class="dropdown-item text-danger"
+                                        <a class="dropdown-item text-danger" 
                                            href="${pageContext.request.contextPath}/logout.jsp">
-                                            Cerrar Sesión
+                                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
                                         </a>
                                     </li>
                                 </ul>
