@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  *
@@ -86,6 +87,9 @@ public class Usuario_Grupo implements Serializable {
 
     @Override
     public int hashCode() {
-        return usuario.hashCode() ^ grupo.hashCode();
+        return Objects.hash(
+                usuario != null ? usuario.getUsuarioID() : null,
+                grupo != null ? grupo.getGrupoID() : null
+        );
     }
 }
