@@ -8,7 +8,7 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="mb-4">Crear Grupo</h2>
-        <form action="${pageContext.request.contextPath}/SvCrearGrupo" method="post">
+        <form id="crearGrupoForm">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre del Grupo:</label>
                 <input type="text" class="form-control" id="nombre" name="nombre" required>
