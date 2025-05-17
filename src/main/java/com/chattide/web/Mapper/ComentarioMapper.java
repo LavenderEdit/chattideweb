@@ -15,15 +15,15 @@ public class ComentarioMapper {
         }
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(c.getComentarioID());
-        dto.setContenido(c.getContenidoText());
+        dto.setContenido(c.getContenido());
         dto.setFechaComentario(c.getFechaComentario());
-        dto.setAvatarUsuarioUrl(c.getUsuario_comentario().getAvatar());
-        if (c.getPublicacion_comentario() != null) {
-            dto.setPublicacionId(c.getPublicacion_comentario().getPublicacionID());
+        dto.setAvatarUsuarioUrl(c.getAutor().getAvatar());
+        if (c.getPublicacion() != null) {
+            dto.setPublicacionId(c.getPublicacion().getPublicacionID());
         }
-        if (c.getUsuario_comentario() != null) {
-            dto.setUsuarioId(c.getUsuario_comentario().getUsuarioID());
-            dto.setUsuarioNombre(c.getUsuario_comentario().getNombre());
+        if (c.getAutor() != null) {
+            dto.setUsuarioId(c.getAutor().getUsuarioID());
+            dto.setUsuarioNombre(c.getAutor().getNombre());
         }
         return dto;
     }
