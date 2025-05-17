@@ -1,6 +1,5 @@
 package com.chattide.web.Persistence;
 
-import com.chattide.web.Modelo.Comentario;
 import java.io.Serializable;
 import jakarta.persistence.Query;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,12 +7,10 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Modelo.Grupo;
-import com.chattide.web.Modelo.Likes;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Usuario_Grupo;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -27,26 +24,13 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario = usuario_Grupo.getUsuario();
-            if (usuario != null) {
-                usuario = em.getReference(usuario.getClass(), usuario.getUsuarioID());
-                usuario_Grupo.setUsuario(usuario);
-            }
-            Grupo grupo = usuario_Grupo.getGrupo();
-            if (grupo != null) {
-                grupo = em.getReference(grupo.getClass(), grupo.getGrupoID());
-                usuario_Grupo.setGrupo(grupo);
-            }
             em.persist(usuario_Grupo);
-            if (usuario != null) {
-                usuario.getGrupos().add(usuario_Grupo);
-                usuario = em.merge(usuario);
-            }
-            if (grupo != null) {
-                grupo.getMiembros().add(usuario_Grupo);
-                grupo = em.merge(grupo);
-            }
             em.getTransaction().commit();
+        } catch (Exception ex) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw ex;
         } finally {
             if (em != null) {
                 em.close();
@@ -113,8 +97,10 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
             em.getTransaction().begin();
             Usuario_Grupo usuarioGrupo;
             try {
-                usuarioGrupo = em.getReference(Usuario_Grupo.class, id);
-                usuarioGrupo.getUsuarioGrupoID();
+                usuarioGrupo = em.find(Usuario_Grupo.class, id);
+                if (usuarioGrupo == null) {
+                    throw new NonexistentEntityException("La relación Usuario_Grupo con id " + id + " ya no existe.");
+                }
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("La relación Usuario_Grupo con id " + id + " ya no existe.", enfe);
             }
@@ -123,45 +109,20 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
             Grupo grupo = usuarioGrupo.getGrupo();
 
             if (usuario != null && grupo != null) {
+                List<Publicacion> publicacionesAEliminar = em.createQuery(
+                        "SELECT p FROM Publicacion p WHERE p.autor = :usuario AND p.grupo = :grupo", Publicacion.class)
+                        .setParameter("usuario", usuario)
+                        .setParameter("grupo", grupo)
+                        .getResultList();
 
-                for (Publicacion pub : new HashSet<>(usuario.getPublicaciones())) {
-                    if (grupo.equals(pub.getGrupo())) {
-
-                        for (Comentario com : new HashSet<>(pub.getComentarios())) {
-                            em.remove(em.contains(com) ? com : em.merge(com));
-                        }
-
-                        for (Likes like : new HashSet<>(pub.getLikes())) {
-                            em.remove(em.contains(like) ? like : em.merge(like));
-                        }
-
-                        em.remove(em.contains(pub) ? pub : em.merge(pub));
-                    }
+                for (Publicacion pub : publicacionesAEliminar) {
+                    em.remove(pub);
                 }
 
-                for (Comentario com : new HashSet<>(usuario.getComentarios())) {
-                    Publicacion pub = com.getPublicacion();
-                    if (pub != null && grupo.equals(pub.getGrupo())) {
-                        em.remove(em.contains(com) ? com : em.merge(com));
-                    }
-                }
-
-                for (Likes like : new HashSet<>(usuario.getLikes())) {
-                    Publicacion pub = like.getPublicacion();
-                    if (pub != null && grupo.equals(pub.getGrupo())) {
-                        em.remove(em.contains(like) ? like : em.merge(like));
-                    }
-                }
-
-                usuario.getGrupos().remove(usuarioGrupo);
-                grupo.getMiembros().remove(usuarioGrupo);
-                em.merge(usuario);
-                em.merge(grupo);
+                em.remove(usuarioGrupo);
             }
 
-            em.remove(em.contains(usuarioGrupo) ? usuarioGrupo : em.merge(usuarioGrupo));
             em.getTransaction().commit();
-
         } finally {
             if (em != null) {
                 em.close();
