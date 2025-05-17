@@ -2,14 +2,17 @@ package com.chattide.web.Servlet.GestGrup;
 
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Service.UsuarioGrupoService;
+import com.chattide.web.Utilities.Mensajes;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import jakarta.inject.Inject;
-import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
 
 /**
  *
@@ -31,30 +34,27 @@ public class SvSalirGrupo extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autenticado");
-        }
-        String param = request.getParameter("id");
-        if (param == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Falta id de grupo");
+            SvUtils.respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_NO_AUTENTICADO);
             return;
         }
 
-        long grupoId;
-        long usuarioId;
-        try {
-            grupoId = Long.parseLong(param);
-            usuarioId = ((Usuario) session.getAttribute("usuario")).getUsuarioID();
-        } catch (NumberFormatException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID Invalido");
+        Long grupoId = SvUtils.parseLongParam(request, "id", response);
+        if (grupoId == null) {
             return;
         }
+
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        long usuarioId = usuario.getUsuarioID();
 
         boolean ok = ugs.leaveGroup(usuarioId, grupoId);
-
         if (ok) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+                SvUtils.respondWithSuccess(response, HttpServletResponse.SC_OK, Mensajes.SALIO_DEL_GRUPO);
+            } else {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            }
         } else {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No se pudo salir del grupo");
+            SvUtils.respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Mensajes.ERROR_ELIMINAR_GRUPO);
         }
     }
 }
