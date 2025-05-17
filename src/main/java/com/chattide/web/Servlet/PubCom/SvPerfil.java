@@ -7,6 +7,7 @@ import com.chattide.web.Service.PublicacionService;
 import com.chattide.web.Service.UsuarioGrupoService;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,10 +23,14 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet(name = "SvPerfil", urlPatterns = {"/SvPerfil"})
 public class SvPerfil extends HttpServlet {
 
+    @Inject
     UsuarioService usuarioService;
+    @Inject
     UsuarioGrupoService ugService;
+    @Inject
     PublicacionService pubService;
 
+    @Override
     public void init() throws ServletException {
         this.usuarioService = new UsuarioService();
         this.ugService = new UsuarioGrupoService();
@@ -47,7 +52,7 @@ public class SvPerfil extends HttpServlet {
         long userId;
         try {
             userId = Long.parseLong(userIdParam);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de usuario inválido");
             return;
         }
