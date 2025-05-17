@@ -6,15 +6,20 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import com.chattide.web.Modelo.Usuario_Grupo;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Comentario;
 import com.chattide.web.Modelo.Likes;
 import com.chattide.web.Modelo.Usuario;
+import com.chattide.web.Persistence.exceptions.IllegalOrphanException;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.RollbackException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -23,81 +28,81 @@ import jakarta.persistence.NoResultException;
 public class UsuarioJpaController extends AbstractJpaController implements Serializable {
 
     public void create(Usuario usuario) {
-        if (usuario.getListaUsuarioGrupo() == null) {
-            usuario.setListaUsuarioGrupo(new ArrayList<Usuario_Grupo>());
+        if (usuario.getGrupos() == null) {
+            usuario.setGrupos(new HashSet<Usuario_Grupo>());
         }
-        if (usuario.getListaPublicacion() == null) {
-            usuario.setListaPublicacion(new ArrayList<Publicacion>());
+        if (usuario.getPublicaciones() == null) {
+            usuario.setPublicaciones(new HashSet<Publicacion>());
         }
-        if (usuario.getListaComentarios() == null) {
-            usuario.setListaComentarios(new ArrayList<Comentario>());
+        if (usuario.getComentarios() == null) {
+            usuario.setComentarios(new HashSet<Comentario>());
         }
-        if (usuario.getListaLikes() == null) {
-            usuario.setListaLikes(new ArrayList<Likes>());
+        if (usuario.getLikes() == null) {
+            usuario.setLikes(new HashSet<Likes>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            List<Usuario_Grupo> attachedListaUsuarioGrupo = new ArrayList<Usuario_Grupo>();
-            for (Usuario_Grupo listaUsuarioGrupoUsuario_GrupoToAttach : usuario.getListaUsuarioGrupo()) {
-                listaUsuarioGrupoUsuario_GrupoToAttach = em.getReference(listaUsuarioGrupoUsuario_GrupoToAttach.getClass(), listaUsuarioGrupoUsuario_GrupoToAttach.getUsuarioGrupoID());
-                attachedListaUsuarioGrupo.add(listaUsuarioGrupoUsuario_GrupoToAttach);
+            Set<Usuario_Grupo> attachedGrupos = new HashSet<Usuario_Grupo>();
+            for (Usuario_Grupo gruposUsuario_GrupoToAttach : usuario.getGrupos()) {
+                gruposUsuario_GrupoToAttach = em.getReference(gruposUsuario_GrupoToAttach.getClass(), gruposUsuario_GrupoToAttach.getUsuarioGrupoID());
+                attachedGrupos.add(gruposUsuario_GrupoToAttach);
             }
-            usuario.setListaUsuarioGrupo(attachedListaUsuarioGrupo);
-            List<Publicacion> attachedListaPublicacion = new ArrayList<Publicacion>();
-            for (Publicacion listaPublicacionPublicacionToAttach : usuario.getListaPublicacion()) {
-                listaPublicacionPublicacionToAttach = em.getReference(listaPublicacionPublicacionToAttach.getClass(), listaPublicacionPublicacionToAttach.getPublicacionID());
-                attachedListaPublicacion.add(listaPublicacionPublicacionToAttach);
+            usuario.setGrupos(attachedGrupos);
+            Set<Publicacion> attachedPublicaciones = new HashSet<Publicacion>();
+            for (Publicacion publicacionesPublicacionToAttach : usuario.getPublicaciones()) {
+                publicacionesPublicacionToAttach = em.getReference(publicacionesPublicacionToAttach.getClass(), publicacionesPublicacionToAttach.getPublicacionID());
+                attachedPublicaciones.add(publicacionesPublicacionToAttach);
             }
-            usuario.setListaPublicacion(attachedListaPublicacion);
-            List<Comentario> attachedListaComentarios = new ArrayList<Comentario>();
-            for (Comentario listaComentariosComentarioToAttach : usuario.getListaComentarios()) {
-                listaComentariosComentarioToAttach = em.getReference(listaComentariosComentarioToAttach.getClass(), listaComentariosComentarioToAttach.getComentarioID());
-                attachedListaComentarios.add(listaComentariosComentarioToAttach);
+            usuario.setPublicaciones(attachedPublicaciones);
+            Set<Comentario> attachedComentarios = new HashSet<Comentario>();
+            for (Comentario comentariosComentarioToAttach : usuario.getComentarios()) {
+                comentariosComentarioToAttach = em.getReference(comentariosComentarioToAttach.getClass(), comentariosComentarioToAttach.getComentarioID());
+                attachedComentarios.add(comentariosComentarioToAttach);
             }
-            usuario.setListaComentarios(attachedListaComentarios);
-            List<Likes> attachedListaLikes = new ArrayList<Likes>();
-            for (Likes listaLikesLikesToAttach : usuario.getListaLikes()) {
-                listaLikesLikesToAttach = em.getReference(listaLikesLikesToAttach.getClass(), listaLikesLikesToAttach.getLikesID());
-                attachedListaLikes.add(listaLikesLikesToAttach);
+            usuario.setComentarios(attachedComentarios);
+            Set<Likes> attachedLikes = new HashSet<Likes>();
+            for (Likes likesLikesToAttach : usuario.getLikes()) {
+                likesLikesToAttach = em.getReference(likesLikesToAttach.getClass(), likesLikesToAttach.getLikesID());
+                attachedLikes.add(likesLikesToAttach);
             }
-            usuario.setListaLikes(attachedListaLikes);
+            usuario.setLikes(attachedLikes);
             em.persist(usuario);
-            for (Usuario_Grupo listaUsuarioGrupoUsuario_Grupo : usuario.getListaUsuarioGrupo()) {
-                Usuario oldUsuario_grupoOfListaUsuarioGrupoUsuario_Grupo = listaUsuarioGrupoUsuario_Grupo.getUsuario_grupo();
-                listaUsuarioGrupoUsuario_Grupo.setUsuario_grupo(usuario);
-                listaUsuarioGrupoUsuario_Grupo = em.merge(listaUsuarioGrupoUsuario_Grupo);
-                if (oldUsuario_grupoOfListaUsuarioGrupoUsuario_Grupo != null) {
-                    oldUsuario_grupoOfListaUsuarioGrupoUsuario_Grupo.getListaUsuarioGrupo().remove(listaUsuarioGrupoUsuario_Grupo);
-                    oldUsuario_grupoOfListaUsuarioGrupoUsuario_Grupo = em.merge(oldUsuario_grupoOfListaUsuarioGrupoUsuario_Grupo);
+            for (Usuario_Grupo gruposUsuario_Grupo : usuario.getGrupos()) {
+                Usuario oldUsuarioOfGruposUsuario_Grupo = gruposUsuario_Grupo.getUsuario();
+                gruposUsuario_Grupo.setUsuario(usuario);
+                gruposUsuario_Grupo = em.merge(gruposUsuario_Grupo);
+                if (oldUsuarioOfGruposUsuario_Grupo != null) {
+                    oldUsuarioOfGruposUsuario_Grupo.getGrupos().remove(gruposUsuario_Grupo);
+                    oldUsuarioOfGruposUsuario_Grupo = em.merge(oldUsuarioOfGruposUsuario_Grupo);
                 }
             }
-            for (Publicacion listaPublicacionPublicacion : usuario.getListaPublicacion()) {
-                Usuario oldUsuario_publicacionOfListaPublicacionPublicacion = listaPublicacionPublicacion.getUsuario_publicacion();
-                listaPublicacionPublicacion.setUsuario_publicacion(usuario);
-                listaPublicacionPublicacion = em.merge(listaPublicacionPublicacion);
-                if (oldUsuario_publicacionOfListaPublicacionPublicacion != null) {
-                    oldUsuario_publicacionOfListaPublicacionPublicacion.getListaPublicacion().remove(listaPublicacionPublicacion);
-                    oldUsuario_publicacionOfListaPublicacionPublicacion = em.merge(oldUsuario_publicacionOfListaPublicacionPublicacion);
+            for (Publicacion publicacionesPublicacion : usuario.getPublicaciones()) {
+                Usuario oldAutorOfPublicacionesPublicacion = publicacionesPublicacion.getAutor();
+                publicacionesPublicacion.setAutor(usuario);
+                publicacionesPublicacion = em.merge(publicacionesPublicacion);
+                if (oldAutorOfPublicacionesPublicacion != null) {
+                    oldAutorOfPublicacionesPublicacion.getPublicaciones().remove(publicacionesPublicacion);
+                    oldAutorOfPublicacionesPublicacion = em.merge(oldAutorOfPublicacionesPublicacion);
                 }
             }
-            for (Comentario listaComentariosComentario : usuario.getListaComentarios()) {
-                Usuario oldUsuario_comentarioOfListaComentariosComentario = listaComentariosComentario.getUsuario_comentario();
-                listaComentariosComentario.setUsuario_comentario(usuario);
-                listaComentariosComentario = em.merge(listaComentariosComentario);
-                if (oldUsuario_comentarioOfListaComentariosComentario != null) {
-                    oldUsuario_comentarioOfListaComentariosComentario.getListaComentarios().remove(listaComentariosComentario);
-                    oldUsuario_comentarioOfListaComentariosComentario = em.merge(oldUsuario_comentarioOfListaComentariosComentario);
+            for (Comentario comentariosComentario : usuario.getComentarios()) {
+                Usuario oldAutorOfComentariosComentario = comentariosComentario.getAutor();
+                comentariosComentario.setAutor(usuario);
+                comentariosComentario = em.merge(comentariosComentario);
+                if (oldAutorOfComentariosComentario != null) {
+                    oldAutorOfComentariosComentario.getComentarios().remove(comentariosComentario);
+                    oldAutorOfComentariosComentario = em.merge(oldAutorOfComentariosComentario);
                 }
             }
-            for (Likes listaLikesLikes : usuario.getListaLikes()) {
-                Usuario oldUsuario_likesOfListaLikesLikes = listaLikesLikes.getUsuario_likes();
-                listaLikesLikes.setUsuario_likes(usuario);
-                listaLikesLikes = em.merge(listaLikesLikes);
-                if (oldUsuario_likesOfListaLikesLikes != null) {
-                    oldUsuario_likesOfListaLikesLikes.getListaLikes().remove(listaLikesLikes);
-                    oldUsuario_likesOfListaLikesLikes = em.merge(oldUsuario_likesOfListaLikesLikes);
+            for (Likes likesLikes : usuario.getLikes()) {
+                Usuario oldUsuarioOfLikesLikes = likesLikes.getUsuario();
+                likesLikes.setUsuario(usuario);
+                likesLikes = em.merge(likesLikes);
+                if (oldUsuarioOfLikesLikes != null) {
+                    oldUsuarioOfLikesLikes.getLikes().remove(likesLikes);
+                    oldUsuarioOfLikesLikes = em.merge(oldUsuarioOfLikesLikes);
                 }
             }
             em.getTransaction().commit();
@@ -108,114 +113,126 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
         }
     }
 
-    public void edit(Usuario usuario) throws NonexistentEntityException, Exception {
+    public void edit(Usuario usuario) throws IllegalOrphanException, NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             Usuario persistentUsuario = em.find(Usuario.class, usuario.getUsuarioID());
-            List<Usuario_Grupo> listaUsuarioGrupoOld = persistentUsuario.getListaUsuarioGrupo();
-            List<Usuario_Grupo> listaUsuarioGrupoNew = usuario.getListaUsuarioGrupo();
-            List<Publicacion> listaPublicacionOld = persistentUsuario.getListaPublicacion();
-            List<Publicacion> listaPublicacionNew = usuario.getListaPublicacion();
-            List<Comentario> listaComentariosOld = persistentUsuario.getListaComentarios();
-            List<Comentario> listaComentariosNew = usuario.getListaComentarios();
-            List<Likes> listaLikesOld = persistentUsuario.getListaLikes();
-            List<Likes> listaLikesNew = usuario.getListaLikes();
-            List<Usuario_Grupo> attachedListaUsuarioGrupoNew = new ArrayList<Usuario_Grupo>();
-            for (Usuario_Grupo listaUsuarioGrupoNewUsuario_GrupoToAttach : listaUsuarioGrupoNew) {
-                listaUsuarioGrupoNewUsuario_GrupoToAttach = em.getReference(listaUsuarioGrupoNewUsuario_GrupoToAttach.getClass(), listaUsuarioGrupoNewUsuario_GrupoToAttach.getUsuarioGrupoID());
-                attachedListaUsuarioGrupoNew.add(listaUsuarioGrupoNewUsuario_GrupoToAttach);
+            Set<Usuario_Grupo> gruposOld = persistentUsuario.getGrupos();
+            Set<Usuario_Grupo> gruposNew = usuario.getGrupos();
+            Set<Publicacion> publicacionesOld = persistentUsuario.getPublicaciones();
+            Set<Publicacion> publicacionesNew = usuario.getPublicaciones();
+            Set<Comentario> comentariosOld = persistentUsuario.getComentarios();
+            Set<Comentario> comentariosNew = usuario.getComentarios();
+            Set<Likes> likesOld = persistentUsuario.getLikes();
+            Set<Likes> likesNew = usuario.getLikes();
+            List<String> illegalOrphanMessages = null;
+            for (Usuario_Grupo gruposOldUsuario_Grupo : gruposOld) {
+                if (!gruposNew.contains(gruposOldUsuario_Grupo)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Usuario_Grupo " + gruposOldUsuario_Grupo + " since its usuario field is not nullable.");
+                }
             }
-            listaUsuarioGrupoNew = attachedListaUsuarioGrupoNew;
-            usuario.setListaUsuarioGrupo(listaUsuarioGrupoNew);
-            List<Publicacion> attachedListaPublicacionNew = new ArrayList<Publicacion>();
-            for (Publicacion listaPublicacionNewPublicacionToAttach : listaPublicacionNew) {
-                listaPublicacionNewPublicacionToAttach = em.getReference(listaPublicacionNewPublicacionToAttach.getClass(), listaPublicacionNewPublicacionToAttach.getPublicacionID());
-                attachedListaPublicacionNew.add(listaPublicacionNewPublicacionToAttach);
+            for (Publicacion publicacionesOldPublicacion : publicacionesOld) {
+                if (!publicacionesNew.contains(publicacionesOldPublicacion)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Publicacion " + publicacionesOldPublicacion + " since its autor field is not nullable.");
+                }
             }
-            listaPublicacionNew = attachedListaPublicacionNew;
-            usuario.setListaPublicacion(listaPublicacionNew);
-            List<Comentario> attachedListaComentariosNew = new ArrayList<Comentario>();
-            for (Comentario listaComentariosNewComentarioToAttach : listaComentariosNew) {
-                listaComentariosNewComentarioToAttach = em.getReference(listaComentariosNewComentarioToAttach.getClass(), listaComentariosNewComentarioToAttach.getComentarioID());
-                attachedListaComentariosNew.add(listaComentariosNewComentarioToAttach);
+            for (Comentario comentariosOldComentario : comentariosOld) {
+                if (!comentariosNew.contains(comentariosOldComentario)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Comentario " + comentariosOldComentario + " since its autor field is not nullable.");
+                }
             }
-            listaComentariosNew = attachedListaComentariosNew;
-            usuario.setListaComentarios(listaComentariosNew);
-            List<Likes> attachedListaLikesNew = new ArrayList<Likes>();
-            for (Likes listaLikesNewLikesToAttach : listaLikesNew) {
-                listaLikesNewLikesToAttach = em.getReference(listaLikesNewLikesToAttach.getClass(), listaLikesNewLikesToAttach.getLikesID());
-                attachedListaLikesNew.add(listaLikesNewLikesToAttach);
+            for (Likes likesOldLikes : likesOld) {
+                if (!likesNew.contains(likesOldLikes)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Likes " + likesOldLikes + " since its usuario field is not nullable.");
+                }
             }
-            listaLikesNew = attachedListaLikesNew;
-            usuario.setListaLikes(listaLikesNew);
+            if (illegalOrphanMessages != null) {
+                throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Set<Usuario_Grupo> attachedGruposNew = new HashSet<Usuario_Grupo>();
+            for (Usuario_Grupo gruposNewUsuario_GrupoToAttach : gruposNew) {
+                gruposNewUsuario_GrupoToAttach = em.getReference(gruposNewUsuario_GrupoToAttach.getClass(), gruposNewUsuario_GrupoToAttach.getUsuarioGrupoID());
+                attachedGruposNew.add(gruposNewUsuario_GrupoToAttach);
+            }
+            gruposNew = attachedGruposNew;
+            usuario.setGrupos(gruposNew);
+            Set<Publicacion> attachedPublicacionesNew = new HashSet<Publicacion>();
+            for (Publicacion publicacionesNewPublicacionToAttach : publicacionesNew) {
+                publicacionesNewPublicacionToAttach = em.getReference(publicacionesNewPublicacionToAttach.getClass(), publicacionesNewPublicacionToAttach.getPublicacionID());
+                attachedPublicacionesNew.add(publicacionesNewPublicacionToAttach);
+            }
+            publicacionesNew = attachedPublicacionesNew;
+            usuario.setPublicaciones(publicacionesNew);
+            Set<Comentario> attachedComentariosNew = new HashSet<Comentario>();
+            for (Comentario comentariosNewComentarioToAttach : comentariosNew) {
+                comentariosNewComentarioToAttach = em.getReference(comentariosNewComentarioToAttach.getClass(), comentariosNewComentarioToAttach.getComentarioID());
+                attachedComentariosNew.add(comentariosNewComentarioToAttach);
+            }
+            comentariosNew = attachedComentariosNew;
+            usuario.setComentarios(comentariosNew);
+            Set<Likes> attachedLikesNew = new HashSet<Likes>();
+            for (Likes likesNewLikesToAttach : likesNew) {
+                likesNewLikesToAttach = em.getReference(likesNewLikesToAttach.getClass(), likesNewLikesToAttach.getLikesID());
+                attachedLikesNew.add(likesNewLikesToAttach);
+            }
+            likesNew = attachedLikesNew;
+            usuario.setLikes(likesNew);
             usuario = em.merge(usuario);
-            for (Usuario_Grupo listaUsuarioGrupoOldUsuario_Grupo : listaUsuarioGrupoOld) {
-                if (!listaUsuarioGrupoNew.contains(listaUsuarioGrupoOldUsuario_Grupo)) {
-                    listaUsuarioGrupoOldUsuario_Grupo.setUsuario_grupo(null);
-                    listaUsuarioGrupoOldUsuario_Grupo = em.merge(listaUsuarioGrupoOldUsuario_Grupo);
-                }
-            }
-            for (Usuario_Grupo listaUsuarioGrupoNewUsuario_Grupo : listaUsuarioGrupoNew) {
-                if (!listaUsuarioGrupoOld.contains(listaUsuarioGrupoNewUsuario_Grupo)) {
-                    Usuario oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo = listaUsuarioGrupoNewUsuario_Grupo.getUsuario_grupo();
-                    listaUsuarioGrupoNewUsuario_Grupo.setUsuario_grupo(usuario);
-                    listaUsuarioGrupoNewUsuario_Grupo = em.merge(listaUsuarioGrupoNewUsuario_Grupo);
-                    if (oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo != null && !oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo.equals(usuario)) {
-                        oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo.getListaUsuarioGrupo().remove(listaUsuarioGrupoNewUsuario_Grupo);
-                        oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo = em.merge(oldUsuario_grupoOfListaUsuarioGrupoNewUsuario_Grupo);
+            for (Usuario_Grupo gruposNewUsuario_Grupo : gruposNew) {
+                if (!gruposOld.contains(gruposNewUsuario_Grupo)) {
+                    Usuario oldUsuarioOfGruposNewUsuario_Grupo = gruposNewUsuario_Grupo.getUsuario();
+                    gruposNewUsuario_Grupo.setUsuario(usuario);
+                    gruposNewUsuario_Grupo = em.merge(gruposNewUsuario_Grupo);
+                    if (oldUsuarioOfGruposNewUsuario_Grupo != null && !oldUsuarioOfGruposNewUsuario_Grupo.equals(usuario)) {
+                        oldUsuarioOfGruposNewUsuario_Grupo.getGrupos().remove(gruposNewUsuario_Grupo);
+                        oldUsuarioOfGruposNewUsuario_Grupo = em.merge(oldUsuarioOfGruposNewUsuario_Grupo);
                     }
                 }
             }
-            for (Publicacion listaPublicacionOldPublicacion : listaPublicacionOld) {
-                if (!listaPublicacionNew.contains(listaPublicacionOldPublicacion)) {
-                    listaPublicacionOldPublicacion.setUsuario_publicacion(null);
-                    listaPublicacionOldPublicacion = em.merge(listaPublicacionOldPublicacion);
-                }
-            }
-            for (Publicacion listaPublicacionNewPublicacion : listaPublicacionNew) {
-                if (!listaPublicacionOld.contains(listaPublicacionNewPublicacion)) {
-                    Usuario oldUsuario_publicacionOfListaPublicacionNewPublicacion = listaPublicacionNewPublicacion.getUsuario_publicacion();
-                    listaPublicacionNewPublicacion.setUsuario_publicacion(usuario);
-                    listaPublicacionNewPublicacion = em.merge(listaPublicacionNewPublicacion);
-                    if (oldUsuario_publicacionOfListaPublicacionNewPublicacion != null && !oldUsuario_publicacionOfListaPublicacionNewPublicacion.equals(usuario)) {
-                        oldUsuario_publicacionOfListaPublicacionNewPublicacion.getListaPublicacion().remove(listaPublicacionNewPublicacion);
-                        oldUsuario_publicacionOfListaPublicacionNewPublicacion = em.merge(oldUsuario_publicacionOfListaPublicacionNewPublicacion);
+            for (Publicacion publicacionesNewPublicacion : publicacionesNew) {
+                if (!publicacionesOld.contains(publicacionesNewPublicacion)) {
+                    Usuario oldAutorOfPublicacionesNewPublicacion = publicacionesNewPublicacion.getAutor();
+                    publicacionesNewPublicacion.setAutor(usuario);
+                    publicacionesNewPublicacion = em.merge(publicacionesNewPublicacion);
+                    if (oldAutorOfPublicacionesNewPublicacion != null && !oldAutorOfPublicacionesNewPublicacion.equals(usuario)) {
+                        oldAutorOfPublicacionesNewPublicacion.getPublicaciones().remove(publicacionesNewPublicacion);
+                        oldAutorOfPublicacionesNewPublicacion = em.merge(oldAutorOfPublicacionesNewPublicacion);
                     }
                 }
             }
-            for (Comentario listaComentariosOldComentario : listaComentariosOld) {
-                if (!listaComentariosNew.contains(listaComentariosOldComentario)) {
-                    listaComentariosOldComentario.setUsuario_comentario(null);
-                    listaComentariosOldComentario = em.merge(listaComentariosOldComentario);
-                }
-            }
-            for (Comentario listaComentariosNewComentario : listaComentariosNew) {
-                if (!listaComentariosOld.contains(listaComentariosNewComentario)) {
-                    Usuario oldUsuario_comentarioOfListaComentariosNewComentario = listaComentariosNewComentario.getUsuario_comentario();
-                    listaComentariosNewComentario.setUsuario_comentario(usuario);
-                    listaComentariosNewComentario = em.merge(listaComentariosNewComentario);
-                    if (oldUsuario_comentarioOfListaComentariosNewComentario != null && !oldUsuario_comentarioOfListaComentariosNewComentario.equals(usuario)) {
-                        oldUsuario_comentarioOfListaComentariosNewComentario.getListaComentarios().remove(listaComentariosNewComentario);
-                        oldUsuario_comentarioOfListaComentariosNewComentario = em.merge(oldUsuario_comentarioOfListaComentariosNewComentario);
+            for (Comentario comentariosNewComentario : comentariosNew) {
+                if (!comentariosOld.contains(comentariosNewComentario)) {
+                    Usuario oldAutorOfComentariosNewComentario = comentariosNewComentario.getAutor();
+                    comentariosNewComentario.setAutor(usuario);
+                    comentariosNewComentario = em.merge(comentariosNewComentario);
+                    if (oldAutorOfComentariosNewComentario != null && !oldAutorOfComentariosNewComentario.equals(usuario)) {
+                        oldAutorOfComentariosNewComentario.getComentarios().remove(comentariosNewComentario);
+                        oldAutorOfComentariosNewComentario = em.merge(oldAutorOfComentariosNewComentario);
                     }
                 }
             }
-            for (Likes listaLikesOldLikes : listaLikesOld) {
-                if (!listaLikesNew.contains(listaLikesOldLikes)) {
-                    listaLikesOldLikes.setUsuario_likes(null);
-                    listaLikesOldLikes = em.merge(listaLikesOldLikes);
-                }
-            }
-            for (Likes listaLikesNewLikes : listaLikesNew) {
-                if (!listaLikesOld.contains(listaLikesNewLikes)) {
-                    Usuario oldUsuario_likesOfListaLikesNewLikes = listaLikesNewLikes.getUsuario_likes();
-                    listaLikesNewLikes.setUsuario_likes(usuario);
-                    listaLikesNewLikes = em.merge(listaLikesNewLikes);
-                    if (oldUsuario_likesOfListaLikesNewLikes != null && !oldUsuario_likesOfListaLikesNewLikes.equals(usuario)) {
-                        oldUsuario_likesOfListaLikesNewLikes.getListaLikes().remove(listaLikesNewLikes);
-                        oldUsuario_likesOfListaLikesNewLikes = em.merge(oldUsuario_likesOfListaLikesNewLikes);
+            for (Likes likesNewLikes : likesNew) {
+                if (!likesOld.contains(likesNewLikes)) {
+                    Usuario oldUsuarioOfLikesNewLikes = likesNewLikes.getUsuario();
+                    likesNewLikes.setUsuario(usuario);
+                    likesNewLikes = em.merge(likesNewLikes);
+                    if (oldUsuarioOfLikesNewLikes != null && !oldUsuarioOfLikesNewLikes.equals(usuario)) {
+                        oldUsuarioOfLikesNewLikes.getLikes().remove(likesNewLikes);
+                        oldUsuarioOfLikesNewLikes = em.merge(oldUsuarioOfLikesNewLikes);
                     }
                 }
             }
@@ -223,7 +240,7 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                long id = usuario.getUsuarioID();
+                Long id = usuario.getUsuarioID();
                 if (findUsuario(id) == null) {
                     throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.");
                 }
@@ -236,7 +253,37 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
         }
     }
 
-    public void destroy(long id) throws NonexistentEntityException {
+    public void updateBasicInfo(Long usuarioId, String nuevoNombre, String nuevoEmail, String nuevoAvatar)
+            throws NonexistentEntityException {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+
+            Usuario usuario = em.find(Usuario.class, usuarioId);
+            if (usuario == null) {
+                throw new NonexistentEntityException("El usuario con id " + usuarioId + " no existe.");
+            }
+
+            usuario.setNombre(nuevoNombre);
+            usuario.setEmail(nuevoEmail);
+            usuario.setAvatar(nuevoAvatar);
+
+            em.getTransaction().commit();
+        } catch (RollbackException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof PersistenceException && cause.getMessage().contains("ConstraintViolationException")) {
+                throw new NonexistentEntityException("El email " + nuevoEmail + " ya está en uso.", cause);
+            }
+            throw e;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -246,29 +293,27 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
                 usuario = em.getReference(Usuario.class, id);
                 usuario.getUsuarioID();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("El usuario con id " + id + " no existe.", enfe);
             }
-            List<Usuario_Grupo> listaUsuarioGrupo = usuario.getListaUsuarioGrupo();
-            for (Usuario_Grupo listaUsuarioGrupoUsuario_Grupo : listaUsuarioGrupo) {
-                listaUsuarioGrupoUsuario_Grupo.setUsuario_grupo(null);
-                listaUsuarioGrupoUsuario_Grupo = em.merge(listaUsuarioGrupoUsuario_Grupo);
+
+            for (Likes like : new HashSet<>(usuario.getLikes())) {
+                em.remove(em.contains(like) ? like : em.merge(like));
             }
-            List<Publicacion> listaPublicacion = usuario.getListaPublicacion();
-            for (Publicacion listaPublicacionPublicacion : listaPublicacion) {
-                listaPublicacionPublicacion.setUsuario_publicacion(null);
-                listaPublicacionPublicacion = em.merge(listaPublicacionPublicacion);
+
+            for (Comentario comentario : new HashSet<>(usuario.getComentarios())) {
+                em.remove(em.contains(comentario) ? comentario : em.merge(comentario));
             }
-            List<Comentario> listaComentarios = usuario.getListaComentarios();
-            for (Comentario listaComentariosComentario : listaComentarios) {
-                listaComentariosComentario.setUsuario_comentario(null);
-                listaComentariosComentario = em.merge(listaComentariosComentario);
+
+            for (Publicacion pub : new HashSet<>(usuario.getPublicaciones())) {
+                em.remove(em.contains(pub) ? pub : em.merge(pub));
             }
-            List<Likes> listaLikes = usuario.getListaLikes();
-            for (Likes listaLikesLikes : listaLikes) {
-                listaLikesLikes.setUsuario_likes(null);
-                listaLikesLikes = em.merge(listaLikesLikes);
+
+            for (Usuario_Grupo ug : new HashSet<>(usuario.getGrupos())) {
+                em.remove(em.contains(ug) ? ug : em.merge(ug));
             }
-            em.remove(usuario);
+
+            em.remove(em.contains(usuario) ? usuario : em.merge(usuario));
+
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -301,25 +346,10 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
         }
     }
 
-    public Usuario findUsuario(long id) {
+    public Usuario findUsuario(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Usuario.class, id);
-        } finally {
-            em.close();
-        }
-    }
-
-    // Dentro de UsuarioJpaController
-    public Usuario findByEmail(String email) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery(
-                    "SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
-                    .setParameter("email", email)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
         } finally {
             em.close();
         }
@@ -333,6 +363,20 @@ public class UsuarioJpaController extends AbstractJpaController implements Seria
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Usuario findByEmail(String email) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             em.close();
         }
