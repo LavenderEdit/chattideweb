@@ -27,8 +27,8 @@ public class UsuarioGrupoService implements IUsuarioGrupoService {
     public boolean joinGroup(Long usuarioId, Long grupoId) {
         try {
             Usuario_Grupo ug = new Usuario_Grupo();
-            ug.setUsuario_grupo(new com.chattide.web.Modelo.Usuario(usuarioId));
-            ug.setGrupo_usuario(new com.chattide.web.Modelo.Grupo(grupoId));
+            ug.setUsuario(new com.chattide.web.Modelo.Usuario(usuarioId));
+            ug.setGrupo(new com.chattide.web.Modelo.Grupo(grupoId));
             ugc.create(ug);
             return true;
         } catch (Exception ex) {
