@@ -47,9 +47,7 @@
                             <img src="${miembro.avatar}"
                                  alt="${miembro.nombre}"
                                  class="rounded-circle me-2"
-                                 width="40" height="40"
-                                 onerror="this.onerror=null;
-                                 this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
+                                 width="40" height="40"/>
                         </c:when>
                         <c:otherwise>
                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
