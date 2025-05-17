@@ -1,7 +1,7 @@
 <%-- 
     Document   : login
     Created on : 11 mar. 2025, 20:05:17
-    Author     : Joan - Izz
+    Author     : Juan - Luis
 --%>
 
 <%@ include file="header.jsp" %>

@@ -1,7 +1,7 @@
 <%-- 
     Document   : registro
     Created on : 11 mar. 2025, 20:05:24
-    Author     : Joan - Izz
+    Author     : Juan - Luis
 --%>
 
 <%@ include file="header.jsp" %>
