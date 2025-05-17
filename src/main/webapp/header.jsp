@@ -102,9 +102,7 @@
                                         <c:when test="${not empty user.avatar}">
                                             <img src="${user.avatar}"
                                                  alt="Avatar"
-                                                 class="rounded-circle me-2 avatar-bg"
-                                                 onerror="this.onerror=null;
-                                                 this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
+                                                 class="rounded-circle me-2 avatar-bg"/>
                                         </c:when>
                                         <c:otherwise>
                                             <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
