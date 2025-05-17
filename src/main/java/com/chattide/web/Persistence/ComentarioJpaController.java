@@ -24,24 +24,24 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Publicacion publicacion_comentario = comentario.getPublicacion_comentario();
-            if (publicacion_comentario != null) {
-                publicacion_comentario = em.getReference(publicacion_comentario.getClass(), publicacion_comentario.getPublicacionID());
-                comentario.setPublicacion_comentario(publicacion_comentario);
+            Publicacion publicacion = comentario.getPublicacion();
+            if (publicacion != null) {
+                publicacion = em.getReference(publicacion.getClass(), publicacion.getPublicacionID());
+                comentario.setPublicacion(publicacion);
             }
-            Usuario usuario_comentario = comentario.getUsuario_comentario();
-            if (usuario_comentario != null) {
-                usuario_comentario = em.getReference(usuario_comentario.getClass(), usuario_comentario.getUsuarioID());
-                comentario.setUsuario_comentario(usuario_comentario);
+            Usuario autor = comentario.getAutor();
+            if (autor != null) {
+                autor = em.getReference(autor.getClass(), autor.getUsuarioID());
+                comentario.setAutor(autor);
             }
             em.persist(comentario);
-            if (publicacion_comentario != null) {
-                publicacion_comentario.getListaComentarios().add(comentario);
-                publicacion_comentario = em.merge(publicacion_comentario);
+            if (publicacion != null) {
+                publicacion.getComentarios().add(comentario);
+                publicacion = em.merge(publicacion);
             }
-            if (usuario_comentario != null) {
-                usuario_comentario.getListaComentarios().add(comentario);
-                usuario_comentario = em.merge(usuario_comentario);
+            if (autor != null) {
+                autor.getComentarios().add(comentario);
+                autor = em.merge(autor);
             }
             em.getTransaction().commit();
         } finally {
@@ -57,40 +57,40 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
             em = getEntityManager();
             em.getTransaction().begin();
             Comentario persistentComentario = em.find(Comentario.class, comentario.getComentarioID());
-            Publicacion publicacion_comentarioOld = persistentComentario.getPublicacion_comentario();
-            Publicacion publicacion_comentarioNew = comentario.getPublicacion_comentario();
-            Usuario usuario_comentarioOld = persistentComentario.getUsuario_comentario();
-            Usuario usuario_comentarioNew = comentario.getUsuario_comentario();
-            if (publicacion_comentarioNew != null) {
-                publicacion_comentarioNew = em.getReference(publicacion_comentarioNew.getClass(), publicacion_comentarioNew.getPublicacionID());
-                comentario.setPublicacion_comentario(publicacion_comentarioNew);
+            Publicacion publicacionOld = persistentComentario.getPublicacion();
+            Publicacion publicacionNew = comentario.getPublicacion();
+            Usuario autorOld = persistentComentario.getAutor();
+            Usuario autorNew = comentario.getAutor();
+            if (publicacionNew != null) {
+                publicacionNew = em.getReference(publicacionNew.getClass(), publicacionNew.getPublicacionID());
+                comentario.setPublicacion(publicacionNew);
             }
-            if (usuario_comentarioNew != null) {
-                usuario_comentarioNew = em.getReference(usuario_comentarioNew.getClass(), usuario_comentarioNew.getUsuarioID());
-                comentario.setUsuario_comentario(usuario_comentarioNew);
+            if (autorNew != null) {
+                autorNew = em.getReference(autorNew.getClass(), autorNew.getUsuarioID());
+                comentario.setAutor(autorNew);
             }
             comentario = em.merge(comentario);
-            if (publicacion_comentarioOld != null && !publicacion_comentarioOld.equals(publicacion_comentarioNew)) {
-                publicacion_comentarioOld.getListaComentarios().remove(comentario);
-                publicacion_comentarioOld = em.merge(publicacion_comentarioOld);
+            if (publicacionOld != null && !publicacionOld.equals(publicacionNew)) {
+                publicacionOld.getComentarios().remove(comentario);
+                publicacionOld = em.merge(publicacionOld);
             }
-            if (publicacion_comentarioNew != null && !publicacion_comentarioNew.equals(publicacion_comentarioOld)) {
-                publicacion_comentarioNew.getListaComentarios().add(comentario);
-                publicacion_comentarioNew = em.merge(publicacion_comentarioNew);
+            if (publicacionNew != null && !publicacionNew.equals(publicacionOld)) {
+                publicacionNew.getComentarios().add(comentario);
+                publicacionNew = em.merge(publicacionNew);
             }
-            if (usuario_comentarioOld != null && !usuario_comentarioOld.equals(usuario_comentarioNew)) {
-                usuario_comentarioOld.getListaComentarios().remove(comentario);
-                usuario_comentarioOld = em.merge(usuario_comentarioOld);
+            if (autorOld != null && !autorOld.equals(autorNew)) {
+                autorOld.getComentarios().remove(comentario);
+                autorOld = em.merge(autorOld);
             }
-            if (usuario_comentarioNew != null && !usuario_comentarioNew.equals(usuario_comentarioOld)) {
-                usuario_comentarioNew.getListaComentarios().add(comentario);
-                usuario_comentarioNew = em.merge(usuario_comentarioNew);
+            if (autorNew != null && !autorNew.equals(autorOld)) {
+                autorNew.getComentarios().add(comentario);
+                autorNew = em.merge(autorNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                long id = comentario.getComentarioID();
+                Long id = comentario.getComentarioID();
                 if (findComentario(id) == null) {
                     throw new NonexistentEntityException("The comentario with id " + id + " no longer exists.");
                 }
@@ -103,7 +103,7 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
         }
     }
 
-    public void destroy(long id) throws NonexistentEntityException {
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -115,15 +115,15 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The comentario with id " + id + " no longer exists.", enfe);
             }
-            Publicacion publicacion_comentario = comentario.getPublicacion_comentario();
-            if (publicacion_comentario != null) {
-                publicacion_comentario.getListaComentarios().remove(comentario);
-                publicacion_comentario = em.merge(publicacion_comentario);
+            Publicacion publicacion = comentario.getPublicacion();
+            if (publicacion != null) {
+                publicacion.getComentarios().remove(comentario);
+                publicacion = em.merge(publicacion);
             }
-            Usuario usuario_comentario = comentario.getUsuario_comentario();
-            if (usuario_comentario != null) {
-                usuario_comentario.getListaComentarios().remove(comentario);
-                usuario_comentario = em.merge(usuario_comentario);
+            Usuario autor = comentario.getAutor();
+            if (autor != null) {
+                autor.getComentarios().remove(comentario);
+                autor = em.merge(autor);
             }
             em.remove(comentario);
             em.getTransaction().commit();
@@ -158,7 +158,7 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
         }
     }
 
-    public Comentario findComentario(long id) {
+    public Comentario findComentario(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Comentario.class, id);
@@ -183,11 +183,14 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
     public List<Comentario> findByPublicacion(Long publicacionId) {
         EntityManager em = getEntityManager();
         try {
-            return em.createQuery(
-                    "SELECT c FROM Comentario c WHERE c.publicacion_comentario.publicacionID = :pid ORDER BY c.fechaComentario DESC",
-                    Comentario.class)
-                    .setParameter("pid", publicacionId)
-                    .getResultList();
+            TypedQuery<Comentario> q = em.createQuery(
+                    "SELECT c FROM Comentario c "
+                    + "WHERE c.publicacion.publicacionID = :pid "
+                    + "ORDER BY c.fechaComentario DESC",
+                    Comentario.class
+            );
+            q.setParameter("pid", publicacionId);
+            return q.getResultList();
         } finally {
             em.close();
         }
@@ -196,10 +199,14 @@ public class ComentarioJpaController extends AbstractJpaController implements Se
     public List<Comentario> findByUsuario(Long usuarioId) {
         EntityManager em = getEntityManager();
         try {
-            TypedQuery<Comentario> query = em.createQuery(
-                    "SELECT c FROM Comentario c WHERE c.usuario = :usuario", Comentario.class);
-            query.setParameter("usuario", usuarioId);
-            return query.getResultList();
+            TypedQuery<Comentario> q = em.createQuery(
+                    "SELECT c FROM Comentario c "
+                    + "WHERE c.autor.usuarioID = :uid "
+                    + "ORDER BY c.fechaComentario DESC",
+                    Comentario.class
+            );
+            q.setParameter("uid", usuarioId);
+            return q.getResultList();
         } finally {
             em.close();
         }
