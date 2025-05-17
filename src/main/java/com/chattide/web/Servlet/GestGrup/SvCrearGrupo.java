@@ -6,8 +6,10 @@ import com.chattide.web.Service.GrupoService;
 import com.chattide.web.Service.UsuarioService;
 import com.chattide.web.Utilities.Enum.TipoPrivacidad;
 import com.chattide.web.Utilities.Mensajes;
+import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +25,7 @@ import java.util.logging.Logger;
  * @author Juan - Luis
  */
 @WebServlet(name = "SvCrearGrupo", urlPatterns = {"/SvCrearGrupo"})
+@MultipartConfig
 public class SvCrearGrupo extends HttpServlet {
 
     private static final Logger LOG = Logger.getLogger(SvCrearGrupo.class.getName());
@@ -49,7 +52,7 @@ public class SvCrearGrupo extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_NO_AUTENTICADO);
+            SvUtils.respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_NO_AUTENTICADO);
             return;
         }
 
@@ -57,16 +60,15 @@ public class SvCrearGrupo extends HttpServlet {
         String descripcion = request.getParameter("descripcion");
         String tipo = request.getParameter("tipo_privacidad");
 
-        if (nombre == null || descripcion == null || tipo == null
-                || nombre.isBlank() || descripcion.isBlank() || tipo.isBlank()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, Mensajes.CAMPOS_VACIOS);
+        if (SvUtils.isNullOrEmpty(nombre, descripcion, tipo)) {
+            SvUtils.respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, Mensajes.CAMPOS_VACIOS);
             return;
         }
 
         Usuario sessUser = (Usuario) session.getAttribute("usuario");
         Usuario creador = usuarioService.findById(sessUser.getUsuarioID());
         if (creador == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no encontrado");
+            SvUtils.respondWithError(response, HttpServletResponse.SC_UNAUTHORIZED, Mensajes.ERROR_USUARIO_NO_ENCONTRADO);
             return;
         }
 
@@ -76,17 +78,20 @@ public class SvCrearGrupo extends HttpServlet {
         try {
             grupo.setTipoPrivacidad(TipoPrivacidad.valueOf(tipo.toUpperCase()));
         } catch (IllegalArgumentException ex) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tipo de privacidad inválido");
+            SvUtils.respondWithError(response, HttpServletResponse.SC_BAD_REQUEST, "Tipo de privacidad inválido");
             return;
         }
 
         boolean ok = grupoService.createGrupoWithConnection(grupo, creador);
-        if (!ok) {
-            LOG.log(Level.SEVERE, "Fallo al crear grupo con conexión para usuario {0}", creador.getUsuarioID());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No se pudo crear el grupo");
-            return;
+        if (ok) {
+            if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+                SvUtils.respondWithSuccess(response, HttpServletResponse.SC_OK, Mensajes.GRUPO_CREADO);
+            } else {
+                response.sendRedirect("/SvMisGrupos");
+            }
+        } else {
+            LOG.log(Level.SEVERE, "Fallo al crear grupo para usuario {0}", creador.getUsuarioID());
+            SvUtils.respondWithError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Mensajes.ERROR_CREAR_GRUPO);
         }
-
-        response.sendRedirect("/SvMisGrupos");
     }
 }
