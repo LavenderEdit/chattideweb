@@ -72,4 +72,15 @@ public class UsuarioService implements IUsuarioService {
             Logger.getLogger(UsuarioService.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public boolean updateBasicInfo(Long id, String nombre, String email, String avatar) {
+        try {
+            usuarioJpaController.updateBasicInfo(id, nombre, email, avatar);
+            return true;
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(UsuarioService.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
 }
