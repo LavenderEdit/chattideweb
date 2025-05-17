@@ -1,5 +1,6 @@
 package com.chattide.web.DTO;
 
+import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ public class PublicacionDTO {
 
     private Long id;
     private String contenido;
-    private Date fechaPublicacion;
+    private Instant fechaPublicacion;
     private Long autorId;
     private String autorNombre;
     private String autorAvatar;
@@ -22,7 +23,7 @@ public class PublicacionDTO {
     public PublicacionDTO() {
     }
 
-    public PublicacionDTO(Long id, String contenido, Date fechaPublicacion, Long autorId, String autorNombre, String autorAvatar, Long grupoId, Long likeId, int likeCount, int comentarioCount) {
+    public PublicacionDTO(Long id, String contenido, Instant fechaPublicacion, Long autorId, String autorNombre, String autorAvatar, Long grupoId, Long likeId, int likeCount, int comentarioCount) {
         this.id = id;
         this.contenido = contenido;
         this.fechaPublicacion = fechaPublicacion;
@@ -52,10 +53,12 @@ public class PublicacionDTO {
     }
 
     public Date getFechaPublicacion() {
-        return fechaPublicacion;
+        return (fechaPublicacion != null)
+               ? Date.from(fechaPublicacion)
+               : null;
     }
 
-    public void setFechaPublicacion(Date fechaPublicacion) {
+    public void setFechaPublicacion(Instant fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 
