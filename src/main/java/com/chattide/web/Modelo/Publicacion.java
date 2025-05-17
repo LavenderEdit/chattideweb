@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,6 +81,12 @@ public class Publicacion implements Serializable {
 
     public Instant getFechaPublicacion() {
         return fechaPublicacion;
+    }
+
+    public Date getFechaPublicacionDate() {
+        return (fechaPublicacion != null)
+                ? Date.from(fechaPublicacion)
+                : null;
     }
 
     public Usuario getAutor() {
