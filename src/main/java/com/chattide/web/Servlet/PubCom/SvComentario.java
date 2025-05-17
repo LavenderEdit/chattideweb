@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -36,26 +35,29 @@ public class SvComentario extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SvUtils.disableCache(response);
-
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debe iniciar sesión");
             return;
         }
+
         Usuario usuario = (Usuario) session.getAttribute("usuario");
-        
         String contenido = request.getParameter("contenido");
         Long publicacionId = SvUtils.parseLongParam(request, "idPublicacion", response);
+
         if (publicacionId == null || contenido == null || contenido.isBlank()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Datos inválidos");
             return;
         }
 
+        Publicacion publicacion = new Publicacion();
+        publicacion.setPublicacionID(publicacionId);
+
         Comentario coment = new Comentario();
-        coment.setContenidoText(contenido.trim());
-        coment.setFechaComentario(new Date());
-        coment.setUsuario_comentario(usuario);
-        coment.setPublicacion_comentario(new Publicacion(publicacionId));
+        coment.setContenido(contenido.trim());
+        coment.setAutor(usuario);
+        coment.setPublicacion(publicacion);
+
         boolean creado = comentarioService.create(coment);
 
         boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
@@ -68,8 +70,8 @@ public class SvComentario extends HttpServlet {
                         "Comentario creado con éxito",
                         Map.of(
                                 "id", coment.getComentarioID(),
-                                "contenido", coment.getContenidoText(),
-                                "fecha", coment.getFechaComentario()
+                                "contenido", coment.getContenido(),
+                                "fecha", coment.getFechaComentarioDate()
                         )
                 );
             } else {
