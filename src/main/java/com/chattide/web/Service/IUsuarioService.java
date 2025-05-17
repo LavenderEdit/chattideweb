@@ -10,4 +10,6 @@ import com.chattide.web.Service.generic.ICrudService;
 public interface IUsuarioService extends ICrudService<Usuario, Long> {
 
     Usuario findByEmail(String email);
+    
+    boolean updateBasicInfo(Long id, String nombre, String email, String avatar);
 }
