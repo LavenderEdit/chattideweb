@@ -68,8 +68,8 @@ public class SvLike extends HttpServlet {
 
         try {
             Likes lk = new Likes();
-            lk.setUsuario_likes(usuario);
-            lk.setPublicacion_likes(pub);
+            lk.setUsuario(usuario);
+            lk.setPublicacion(pub);
             ls.create(lk);
 
             long total = ls.countByPublication(pubId);
@@ -84,7 +84,7 @@ public class SvLike extends HttpServlet {
                     Map.of(),
                     data
             );
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             Throwable cause = ex.getCause();
             if (cause instanceof java.sql.SQLIntegrityConstraintViolationException) {
                 SvUtils.respondWithError(response,
