@@ -66,7 +66,7 @@ public class SvPublicar extends HttpServlet {
                         "Publicación creada", Map.of(
                                 "id", pub.getPublicacionID(),
                                 "contenido", pub.getContenido(),
-                                "fecha", pub.getFechaPublicacion()
+                                "fecha", pub.getFechaPublicacionDate()
                         ));
             } else {
                 SvUtils.respondWithJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
