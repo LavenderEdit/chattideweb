@@ -1,18 +1,13 @@
 package com.chattide.web.Modelo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  *
@@ -23,77 +18,114 @@ import java.util.Date;
         name = "Comentario",
         schema = "bdchattide"
 )
-
 public class Comentario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long comentarioID;
+    private Long comentarioID;
 
-    @Column(name = "Contenido")
-    private String contenidoText;
+    @NotBlank
+    @Size(max = 1000)
+    @Column(name = "contenido", length = 1000, nullable = false)
+    private String contenido;
 
-    @Column(name = "FechaComentario")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaComentario;
+    @Column(name = "fecha_comentario", nullable = false, updatable = false)
+    private Instant fechaComentario;
 
-    //Conexiones
-    @ManyToOne
-    @JoinColumn(name = "idPublicacion")
-    private Publicacion publicacion_comentario;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "idPublicacion",
+            nullable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(name = "fk_comentario_publicacion")
+    )
+    private Publicacion publicacion;
 
-    @ManyToOne
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario_comentario;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "idUsuario",
+            nullable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(name = "fk_comentario_usuario")
+    )
+    private Usuario autor;
 
     public Comentario() {
     }
 
-    public Comentario(long comentarioID, String contenidoText, Date fechaComentario, Publicacion publicacion_comentario, Usuario usuario_comentario) {
-        this.comentarioID = comentarioID;
-        this.contenidoText = contenidoText;
-        this.fechaComentario = fechaComentario;
-        this.publicacion_comentario = publicacion_comentario;
-        this.usuario_comentario = usuario_comentario;
+    public Comentario(String contenido, Publicacion publicacion, Usuario autor) {
+        this.contenido = contenido;
+        this.publicacion = publicacion;
+        this.autor = autor;
     }
 
-    public long getComentarioID() {
+    public Long getComentarioID() {
         return comentarioID;
     }
 
-    public void setComentarioID(long comentarioID) {
-        this.comentarioID = comentarioID;
+    public String getContenido() {
+        return contenido;
     }
 
-    public String getContenidoText() {
-        return contenidoText;
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
     }
 
-    public void setContenidoText(String contenidoText) {
-        this.contenidoText = contenidoText;
-    }
-
-    public Date getFechaComentario() {
+    public Instant getFechaComentario() {
         return fechaComentario;
     }
 
-    public void setFechaComentario(Date fechaComentario) {
+    public Date getFechaComentarioDate() {
+        return (fechaComentario != null)
+                ? Date.from(fechaComentario)
+                : null;
+    }
+
+    public Publicacion getPublicacion() {
+        return publicacion;
+    }
+
+    public void setPublicacion(Publicacion publicacion) {
+        this.publicacion = publicacion;
+    }
+
+    public Usuario getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Usuario autor) {
+        this.autor = autor;
+    }
+
+    public void setComentarioID(Long comentarioID) {
+        this.comentarioID = comentarioID;
+    }
+
+    public void setFechaComentario(Instant fechaComentario) {
         this.fechaComentario = fechaComentario;
     }
 
-    public Publicacion getPublicacion_comentario() {
-        return publicacion_comentario;
+    @PrePersist
+    protected void onCreate() {
+        fechaComentario = Instant.now();
     }
 
-    public void setPublicacion_comentario(Publicacion publicacion_comentario) {
-        this.publicacion_comentario = publicacion_comentario;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Comentario)) {
+            return false;
+        }
+        Comentario that = (Comentario) o;
+        return Objects.equals(comentarioID, that.comentarioID);
     }
 
-    public Usuario getUsuario_comentario() {
-        return usuario_comentario;
-    }
-
-    public void setUsuario_comentario(Usuario usuario_comentario) {
-        this.usuario_comentario = usuario_comentario;
+    @Override
+    public int hashCode() {
+        return Objects.hash(comentarioID);
     }
 }
