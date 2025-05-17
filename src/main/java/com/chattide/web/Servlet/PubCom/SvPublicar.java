@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -36,8 +35,6 @@ public class SvPublicar extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        SvUtils.disableCache(response);
-
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Debe iniciar sesión");
@@ -53,10 +50,9 @@ public class SvPublicar extends HttpServlet {
         }
 
         Publicacion pub = new Publicacion();
-        pub.setContenidoText(contenido.trim());
-        pub.setFechaPublicacion(new Date());
-        pub.setUsuario_publicacion(usuario);
-        pub.setGrupo_publicacion(new Grupo(grupoId));
+        pub.setContenido(contenido.trim());
+        pub.setAutor(usuario);
+        pub.setGrupo(new Grupo(grupoId));
 
         boolean created = publicacionService.create(pub);
 
@@ -69,7 +65,7 @@ public class SvPublicar extends HttpServlet {
                 SvUtils.respondWithJson(response, HttpServletResponse.SC_OK, true,
                         "Publicación creada", Map.of(
                                 "id", pub.getPublicacionID(),
-                                "contenido", pub.getContenidoText(),
+                                "contenido", pub.getContenido(),
                                 "fecha", pub.getFechaPublicacion()
                         ));
             } else {
