@@ -14,9 +14,7 @@
                 <img src="${user.avatar}"
                      alt="Avatar"
                      class="img-thumbnail mb-3"
-                     width="200" height="200"
-                     onerror="this.onerror=null;
-                     this.src='${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp';"/>
+                     width="200" height="200"/>
             </c:when>
             <c:otherwise>
                 <img src="${pageContext.request.contextPath}/images/Usuario/DefaultUserAvatar.webp"
