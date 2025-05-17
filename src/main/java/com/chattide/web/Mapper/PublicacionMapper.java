@@ -16,18 +16,18 @@ public class PublicacionMapper {
 
         PublicacionDTO dto = new PublicacionDTO();
         dto.setId(p.getPublicacionID());
-        dto.setContenido(p.getContenidoText());
+        dto.setContenido(p.getContenido());
         dto.setFechaPublicacion(p.getFechaPublicacion());
-        dto.setAutorId(p.getUsuario_publicacion().getUsuarioID());
-        dto.setAutorNombre(p.getUsuario_publicacion().getNombre());
-        dto.setAutorAvatar(p.getUsuario_publicacion().getAvatar());
-        dto.setGrupoId(p.getGrupo_publicacion().getGrupoID());
+        dto.setAutorId(p.getAutor().getUsuarioID());
+        dto.setAutorNombre(p.getAutor().getNombre());
+        dto.setAutorAvatar(p.getAutor().getAvatar());
+        dto.setGrupoId(p.getGrupo().getGrupoID());
 
-        dto.setLikeCount(p.getListaLikes() != null
-                ? p.getListaLikes().size() : 0);
+        dto.setLikeCount(p.getLikes() != null
+                ? p.getLikes().size() : 0);
 
-        dto.setComentarioCount(p.getListaComentarios() != null
-                ? p.getListaComentarios().size() : 0);
+        dto.setComentarioCount(p.getComentarios() != null
+                ? p.getComentarios().size() : 0);
 
         return dto;
     }
