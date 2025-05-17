@@ -13,10 +13,10 @@ public class GrupoMapper {
         GrupoDTO dto = new GrupoDTO();
         dto.setId(g.getGrupoID());
         dto.setNombre(g.getNombre());
-        dto.setDescripcion(g.getDescripcionText());
+        dto.setDescripcion(g.getDescripcion());
         dto.setTipoPrivacidad(g.getTipoPrivacidad());
-        dto.setMiembrosCount(g.getListaGrupoUsuario() != null ? g.getListaGrupoUsuario().size() : 0);
-        dto.setPublicacionesCount(g.getListaPublicacion() != null ? g.getListaPublicacion().size() : 0);
+        dto.setMiembrosCount(g.getMiembros() != null ? g.getMiembros().size() : 0);
+        dto.setPublicacionesCount(g.getPublicaciones() != null ? g.getPublicaciones().size() : 0);
         return dto;
     }
 }
