@@ -33,6 +33,7 @@ public class SvUnirseGrupo extends HttpServlet {
 
         Long uid = ((Usuario) request.getSession().getAttribute("usuario")).getUsuarioID();
         Long gid = Long.valueOf(request.getParameter("id"));
+
         if (ugs.joinGroup(uid, gid)) {
             response.sendRedirect(request.getContextPath() + "/SvMisGrupos");
         } else {
