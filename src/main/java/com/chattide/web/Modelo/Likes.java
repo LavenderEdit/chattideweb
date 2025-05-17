@@ -1,14 +1,10 @@
 package com.chattide.web.Modelo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
  *
@@ -17,54 +13,93 @@ import java.io.Serializable;
 @Entity
 @Table(
         name = "Likes",
-        schema = "bdchattide"
+        schema = "bdchattide",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"idUsuario", "idPublicacion"},
+                name = "uk_likes_usuario_publicacion"
+        )
 )
-
 public class Likes implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long likesID;
+    private Long likesID;
 
-    //Conexiones
-    @ManyToOne
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario_likes;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "idUsuario",
+            nullable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(name = "fk_likes_usuario")
+    )
+    private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "idPublicacion")
-    private Publicacion publicacion_likes;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "idPublicacion",
+            nullable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(name = "fk_likes_publicacion")
+    )
+    private Publicacion publicacion;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
     public Likes() {
     }
 
-    public Likes(long likesID, Usuario usuario_likes, Publicacion publicacion_likes) {
-        this.likesID = likesID;
-        this.usuario_likes = usuario_likes;
-        this.publicacion_likes = publicacion_likes;
+    public Likes(Usuario usuario, Publicacion publicacion) {
+        this.usuario = usuario;
+        this.publicacion = publicacion;
     }
 
-    public long getLikesID() {
+    public Long getLikesID() {
         return likesID;
     }
 
-    public void setLikesID(long likesID) {
-        this.likesID = likesID;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public Usuario getUsuario_likes() {
-        return usuario_likes;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
-    public void setUsuario_likes(Usuario usuario_likes) {
-        this.usuario_likes = usuario_likes;
+    public Publicacion getPublicacion() {
+        return publicacion;
     }
 
-    public Publicacion getPublicacion_likes() {
-        return publicacion_likes;
+    public void setPublicacion(Publicacion publicacion) {
+        this.publicacion = publicacion;
     }
 
-    public void setPublicacion_likes(Publicacion publicacion_likes) {
-        this.publicacion_likes = publicacion_likes;
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Likes)) {
+            return false;
+        }
+        Likes likes = (Likes) o;
+        return Objects.equals(usuario, likes.usuario)
+                && Objects.equals(publicacion, likes.publicacion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(usuario, publicacion);
     }
 }
