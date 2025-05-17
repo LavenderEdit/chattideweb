@@ -8,7 +8,6 @@ import com.chattide.web.Utilities.GlobalFunctions.SvUtils;
 import com.chattide.web.Utilities.Mensajes;
 
 import java.io.IOException;
-import java.io.File;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -18,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.MultipartConfig;
 
 /**
@@ -47,7 +47,7 @@ public class SvMiCuenta extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
             return;
         }
 
@@ -55,52 +55,47 @@ public class SvMiCuenta extends HttpServlet {
         usuario = us.findById(usuario.getUsuarioID());
 
         UsuarioDTO dto = UsuarioMapper.toDTO(usuario);
-
         String avatarUrl = dto.getAvatar();
         if (avatarUrl != null && !avatarUrl.isBlank()) {
-            String ctxPath = request.getContextPath();
-            String relPath = avatarUrl.startsWith(ctxPath)
-                    ? avatarUrl.substring(ctxPath.length())
-                    : avatarUrl;
-            String realPath = getServletContext().getRealPath(relPath);
-            if (realPath != null && new File(realPath).isFile()) {
-                dto.setAvatar(ctxPath + relPath + "?v=" + System.currentTimeMillis());
-            } else {
-                dto.setAvatar(null);
-            }
+            dto.setAvatar(SvUtils.normalizeAvatarLogin(getServletContext(), avatarUrl));
         }
 
+        session.setAttribute("usuario", usuario);
         session.setAttribute("usuarioDTO", dto);
-        request.getRequestDispatcher("/miCuenta.jsp").forward(request, response);
+
+        request.getRequestDispatcher("/miCuenta.jsp")
+                .forward(request, response);
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        SvUtils.disableCache(response);
         response.setContentType("application/json;charset=UTF-8");
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("usuario") == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Mensajes.USUARIO_NO_AUTENTICADO);
             return;
         }
 
-        String nuevoNombre = request.getParameter("nombre");
-        String nuevoEmail = request.getParameter("email");
+        long userId = ((Usuario) session.getAttribute("usuario")).getUsuarioID();
+        String newName = request.getParameter("nombre");
+        String newMail = request.getParameter("email");
 
-        if (SvUtils.isNullOrEmpty(nuevoNombre, nuevoEmail)) {
+        if (SvUtils.isNullOrEmpty(newName, newMail)) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, Mensajes.CAMPOS_VACIOS);
             return;
         }
 
-        Usuario oldUser = (Usuario) session.getAttribute("usuario");
-
-        if (!nuevoEmail.equals(oldUser.getEmail()) && us.findByEmail(nuevoEmail) != null) {
+        Usuario existing = us.findByEmail(newMail);
+        if (existing != null && existing.getUsuarioID() != userId) {
             response.sendError(HttpServletResponse.SC_CONFLICT, Mensajes.USUARIO_EMAIL_EXISTE);
             return;
         }
 
         Part avatarPart = request.getPart("avatar");
-        String avatarUrl = oldUser.getAvatar();
+        String avatarUrl = null;
         if (avatarPart != null && avatarPart.getSize() > 0) {
             String rel = SvUtils.saveUploadedFile(
                     avatarPart,
@@ -109,15 +104,20 @@ public class SvMiCuenta extends HttpServlet {
             avatarUrl = request.getContextPath() + rel;
         }
 
-        oldUser.setNombre(nuevoNombre);
-        oldUser.setEmail(nuevoEmail);
-        oldUser.setAvatar(avatarUrl);
-
-        boolean ok = us.update(oldUser);
+        boolean ok = us.updateBasicInfo(userId, newName, newMail, avatarUrl);
         if (!ok) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, Mensajes.ERROR_SERVIDOR);
             return;
         }
+
+        Usuario updated = us.findById(userId);
+        UsuarioDTO dto = UsuarioMapper.toDTO(updated);
+        if (dto.getAvatar() != null && !dto.getAvatar().isBlank()) {
+            dto.setAvatar(SvUtils.normalizeAvatarLogin(getServletContext(), dto.getAvatar()));
+        }
+
+        session.setAttribute("usuario", updated);
+        session.setAttribute("usuarioDTO", dto);
 
         SvUtils.respondWithSuccess(response, HttpServletResponse.SC_OK, Mensajes.USUARIO_DATOS_MODIFICADOS);
     }
