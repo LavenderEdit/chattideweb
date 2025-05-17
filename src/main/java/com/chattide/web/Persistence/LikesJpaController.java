@@ -26,24 +26,24 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario_likes = likes.getUsuario_likes();
-            if (usuario_likes != null) {
-                usuario_likes = em.getReference(usuario_likes.getClass(), usuario_likes.getUsuarioID());
-                likes.setUsuario_likes(usuario_likes);
+            Usuario usuario = likes.getUsuario();
+            if (usuario != null) {
+                usuario = em.getReference(usuario.getClass(), usuario.getUsuarioID());
+                likes.setUsuario(usuario);
             }
-            Publicacion publicacion_likes = likes.getPublicacion_likes();
-            if (publicacion_likes != null) {
-                publicacion_likes = em.getReference(publicacion_likes.getClass(), publicacion_likes.getPublicacionID());
-                likes.setPublicacion_likes(publicacion_likes);
+            Publicacion publicacion = likes.getPublicacion();
+            if (publicacion != null) {
+                publicacion = em.getReference(publicacion.getClass(), publicacion.getPublicacionID());
+                likes.setPublicacion(publicacion);
             }
             em.persist(likes);
-            if (usuario_likes != null) {
-                usuario_likes.getListaLikes().add(likes);
-                usuario_likes = em.merge(usuario_likes);
+            if (usuario != null) {
+                usuario.getLikes().add(likes);
+                usuario = em.merge(usuario);
             }
-            if (publicacion_likes != null) {
-                publicacion_likes.getListaLikes().add(likes);
-                publicacion_likes = em.merge(publicacion_likes);
+            if (publicacion != null) {
+                publicacion.getLikes().add(likes);
+                publicacion = em.merge(publicacion);
             }
             em.getTransaction().commit();
         } finally {
@@ -59,40 +59,40 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
             em = getEntityManager();
             em.getTransaction().begin();
             Likes persistentLikes = em.find(Likes.class, likes.getLikesID());
-            Usuario usuario_likesOld = persistentLikes.getUsuario_likes();
-            Usuario usuario_likesNew = likes.getUsuario_likes();
-            Publicacion publicacion_likesOld = persistentLikes.getPublicacion_likes();
-            Publicacion publicacion_likesNew = likes.getPublicacion_likes();
-            if (usuario_likesNew != null) {
-                usuario_likesNew = em.getReference(usuario_likesNew.getClass(), usuario_likesNew.getUsuarioID());
-                likes.setUsuario_likes(usuario_likesNew);
+            Usuario usuarioOld = persistentLikes.getUsuario();
+            Usuario usuarioNew = likes.getUsuario();
+            Publicacion publicacionOld = persistentLikes.getPublicacion();
+            Publicacion publicacionNew = likes.getPublicacion();
+            if (usuarioNew != null) {
+                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getUsuarioID());
+                likes.setUsuario(usuarioNew);
             }
-            if (publicacion_likesNew != null) {
-                publicacion_likesNew = em.getReference(publicacion_likesNew.getClass(), publicacion_likesNew.getPublicacionID());
-                likes.setPublicacion_likes(publicacion_likesNew);
+            if (publicacionNew != null) {
+                publicacionNew = em.getReference(publicacionNew.getClass(), publicacionNew.getPublicacionID());
+                likes.setPublicacion(publicacionNew);
             }
             likes = em.merge(likes);
-            if (usuario_likesOld != null && !usuario_likesOld.equals(usuario_likesNew)) {
-                usuario_likesOld.getListaLikes().remove(likes);
-                usuario_likesOld = em.merge(usuario_likesOld);
+            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
+                usuarioOld.getLikes().remove(likes);
+                usuarioOld = em.merge(usuarioOld);
             }
-            if (usuario_likesNew != null && !usuario_likesNew.equals(usuario_likesOld)) {
-                usuario_likesNew.getListaLikes().add(likes);
-                usuario_likesNew = em.merge(usuario_likesNew);
+            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
+                usuarioNew.getLikes().add(likes);
+                usuarioNew = em.merge(usuarioNew);
             }
-            if (publicacion_likesOld != null && !publicacion_likesOld.equals(publicacion_likesNew)) {
-                publicacion_likesOld.getListaLikes().remove(likes);
-                publicacion_likesOld = em.merge(publicacion_likesOld);
+            if (publicacionOld != null && !publicacionOld.equals(publicacionNew)) {
+                publicacionOld.getLikes().remove(likes);
+                publicacionOld = em.merge(publicacionOld);
             }
-            if (publicacion_likesNew != null && !publicacion_likesNew.equals(publicacion_likesOld)) {
-                publicacion_likesNew.getListaLikes().add(likes);
-                publicacion_likesNew = em.merge(publicacion_likesNew);
+            if (publicacionNew != null && !publicacionNew.equals(publicacionOld)) {
+                publicacionNew.getLikes().add(likes);
+                publicacionNew = em.merge(publicacionNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                long id = likes.getLikesID();
+                Long id = likes.getLikesID();
                 if (findLikes(id) == null) {
                     throw new NonexistentEntityException("The likes with id " + id + " no longer exists.");
                 }
@@ -105,7 +105,7 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
         }
     }
 
-    public void destroy(long id) throws NonexistentEntityException {
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -117,15 +117,15 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The likes with id " + id + " no longer exists.", enfe);
             }
-            Usuario usuario_likes = likes.getUsuario_likes();
-            if (usuario_likes != null) {
-                usuario_likes.getListaLikes().remove(likes);
-                usuario_likes = em.merge(usuario_likes);
+            Usuario usuario = likes.getUsuario();
+            if (usuario != null) {
+                usuario.getLikes().remove(likes);
+                usuario = em.merge(usuario);
             }
-            Publicacion publicacion_likes = likes.getPublicacion_likes();
-            if (publicacion_likes != null) {
-                publicacion_likes.getListaLikes().remove(likes);
-                publicacion_likes = em.merge(publicacion_likes);
+            Publicacion publicacion = likes.getPublicacion();
+            if (publicacion != null) {
+                publicacion.getLikes().remove(likes);
+                publicacion = em.merge(publicacion);
             }
             em.remove(likes);
             em.getTransaction().commit();
@@ -160,7 +160,7 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
         }
     }
 
-    public Likes findLikes(long id) {
+    public Likes findLikes(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Likes.class, id);
@@ -187,8 +187,8 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
         try {
             TypedQuery<Likes> q = em.createQuery(
                     "SELECT l FROM Likes l "
-                    + " WHERE l.usuario_likes.usuarioID = :uid"
-                    + "   AND l.publicacion_likes.publicacionID = :pid",
+                    + "WHERE l.usuario.usuarioID = :uid "
+                    + "AND l.publicacion.publicacionID = :pid",
                     Likes.class
             );
             q.setParameter("uid", userId);
@@ -206,8 +206,10 @@ public class LikesJpaController extends AbstractJpaController implements Seriali
         var em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT COUNT(l) FROM Likes l WHERE l.publicacion_likes.publicacionID = :p",
-                    Long.class)
+                    "SELECT COUNT(l) FROM Likes l "
+                    + "WHERE l.publicacion.publicacionID = :p",
+                    Long.class
+            )
                     .setParameter("p", pubId)
                     .getSingleResult();
         } finally {
