@@ -1,20 +1,12 @@
 package com.chattide.web.Modelo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -25,105 +17,130 @@ import java.util.List;
         name = "Publicacion",
         schema = "bdchattide"
 )
-
 public class Publicacion implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long publicacionID;
+    private Long publicacionID;
 
-    @Column(name = "Contenido")
-    private String contenidoText;
+    @NotNull
+    @Size(min = 1, max = 2000)
+    @Column(name = "contenido", length = 2000, nullable = false)
+    private String contenido;
 
-    @Column(name = "FechaPublicacion")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaPublicacion;
+    @Column(name = "fecha_publicacion", nullable = false, updatable = false)
+    private Instant fechaPublicacion;
 
-    //Conexiones
-    @ManyToOne
-    @JoinColumn(name = "idUsuario")
-    private Usuario usuario_publicacion;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idUsuario", nullable = false, updatable = false)
+    private Usuario autor;
 
-    @ManyToOne
-    @JoinColumn(name = "idGrupo")
-    private Grupo grupo_publicacion;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idGrupo", nullable = false, updatable = false)
+    private Grupo grupo;
 
-    @OneToMany(mappedBy = "publicacion_comentario")
-    private List<Comentario> listaComentarios;
+    @OneToMany(
+            mappedBy = "publicacion",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private Set<Comentario> comentarios = new HashSet<>();
 
-    @OneToMany(mappedBy = "publicacion_likes")
-    private List<Likes> listaLikes;
+    @OneToMany(
+            mappedBy = "publicacion",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private Set<Likes> likes = new HashSet<>();
 
     public Publicacion() {
     }
 
-    public Publicacion(long publicacionID) {
-        this.publicacionID = publicacionID;
-    }
-    
-    public Publicacion(long publicacionID, String contenidoText, Date fechaPublicacion, Usuario usuario_publicacion, Grupo grupo_publicacion, List<Comentario> listaComentarios, List<Likes> listaLikes) {
-        this.publicacionID = publicacionID;
-        this.contenidoText = contenidoText;
-        this.fechaPublicacion = fechaPublicacion;
-        this.usuario_publicacion = usuario_publicacion;
-        this.grupo_publicacion = grupo_publicacion;
-        this.listaComentarios = listaComentarios;
-        this.listaLikes = listaLikes;
+    public Publicacion(String contenido, Usuario autor, Grupo grupo) {
+        this.contenido = contenido;
+        this.autor = autor;
+        this.grupo = grupo;
     }
 
-    public long getPublicacionID() {
+    public Long getPublicacionID() {
         return publicacionID;
     }
 
-    public void setPublicacionID(long publicacionID) {
-        this.publicacionID = publicacionID;
+    public String getContenido() {
+        return contenido;
     }
 
-    public String getContenidoText() {
-        return contenidoText;
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
     }
 
-    public void setContenidoText(String contenidoText) {
-        this.contenidoText = contenidoText;
-    }
-
-    public Date getFechaPublicacion() {
+    public Instant getFechaPublicacion() {
         return fechaPublicacion;
     }
 
-    public void setFechaPublicacion(Date fechaPublicacion) {
+    public Usuario getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Usuario autor) {
+        this.autor = autor;
+    }
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
+    }
+
+    public Set<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public Set<Likes> getLikes() {
+        return likes;
+    }
+
+    public void setPublicacionID(Long publicacionID) {
+        this.publicacionID = publicacionID;
+    }
+
+    public void setFechaPublicacion(Instant fechaPublicacion) {
         this.fechaPublicacion = fechaPublicacion;
     }
 
-    public Usuario getUsuario_publicacion() {
-        return usuario_publicacion;
+    public void setComentarios(Set<Comentario> comentarios) {
+        this.comentarios = comentarios;
     }
 
-    public void setUsuario_publicacion(Usuario usuario_publicacion) {
-        this.usuario_publicacion = usuario_publicacion;
+    public void setLikes(Set<Likes> likes) {
+        this.likes = likes;
     }
 
-    public Grupo getGrupo_publicacion() {
-        return grupo_publicacion;
+    @PrePersist
+    protected void onCreate() {
+        fechaPublicacion = Instant.now();
     }
 
-    public void setGrupo_publicacion(Grupo grupo_publicacion) {
-        this.grupo_publicacion = grupo_publicacion;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Publicacion)) {
+            return false;
+        }
+        Publicacion that = (Publicacion) o;
+        return publicacionID != null && publicacionID.equals(that.publicacionID);
     }
 
-    public List<Comentario> getListaComentarios() {
-        return listaComentarios;
-    }
-
-    public void setListaComentarios(List<Comentario> listaComentarios) {
-        this.listaComentarios = listaComentarios;
-    }
-
-    public List<Likes> getListaLikes() {
-        return listaLikes;
-    }
-
-    public void setListaLikes(List<Likes> listaLikes) {
-        this.listaLikes = listaLikes;
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
