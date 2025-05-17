@@ -93,17 +93,6 @@ public class SvUtils {
         return null;
     }
 
-    public static String normalizeAvatar(ServletContext ctx, String avatarUrl) {
-        if (avatarUrl == null) {
-            return null;
-        }
-        String real = ctx.getRealPath(avatarUrl);
-        if (new File(real).isFile()) {
-            return avatarUrl;
-        }
-        return null;
-    }
-
     /**
      * Añade las cabeceras HTTP necesarias para deshabilitar la caché del
      * navegador y forzar siempre una recarga.
