@@ -1,5 +1,6 @@
 package com.chattide.web.Persistence;
 
+import com.chattide.web.Modelo.Comentario;
 import java.io.Serializable;
 import jakarta.persistence.Query;
 import jakarta.persistence.EntityNotFoundException;
@@ -7,9 +8,12 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import com.chattide.web.Modelo.Usuario;
 import com.chattide.web.Modelo.Grupo;
+import com.chattide.web.Modelo.Likes;
+import com.chattide.web.Modelo.Publicacion;
 import com.chattide.web.Modelo.Usuario_Grupo;
 import com.chattide.web.Persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -23,24 +27,24 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario usuario_grupo = usuario_Grupo.getUsuario_grupo();
-            if (usuario_grupo != null) {
-                usuario_grupo = em.getReference(usuario_grupo.getClass(), usuario_grupo.getUsuarioID());
-                usuario_Grupo.setUsuario_grupo(usuario_grupo);
+            Usuario usuario = usuario_Grupo.getUsuario();
+            if (usuario != null) {
+                usuario = em.getReference(usuario.getClass(), usuario.getUsuarioID());
+                usuario_Grupo.setUsuario(usuario);
             }
-            Grupo grupo_usuario = usuario_Grupo.getGrupo_usuario();
-            if (grupo_usuario != null) {
-                grupo_usuario = em.getReference(grupo_usuario.getClass(), grupo_usuario.getGrupoID());
-                usuario_Grupo.setGrupo_usuario(grupo_usuario);
+            Grupo grupo = usuario_Grupo.getGrupo();
+            if (grupo != null) {
+                grupo = em.getReference(grupo.getClass(), grupo.getGrupoID());
+                usuario_Grupo.setGrupo(grupo);
             }
             em.persist(usuario_Grupo);
-            if (usuario_grupo != null) {
-                usuario_grupo.getListaUsuarioGrupo().add(usuario_Grupo);
-                usuario_grupo = em.merge(usuario_grupo);
+            if (usuario != null) {
+                usuario.getGrupos().add(usuario_Grupo);
+                usuario = em.merge(usuario);
             }
-            if (grupo_usuario != null) {
-                grupo_usuario.getListaGrupoUsuario().add(usuario_Grupo);
-                grupo_usuario = em.merge(grupo_usuario);
+            if (grupo != null) {
+                grupo.getMiembros().add(usuario_Grupo);
+                grupo = em.merge(grupo);
             }
             em.getTransaction().commit();
         } finally {
@@ -56,40 +60,40 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
             em = getEntityManager();
             em.getTransaction().begin();
             Usuario_Grupo persistentUsuario_Grupo = em.find(Usuario_Grupo.class, usuario_Grupo.getUsuarioGrupoID());
-            Usuario usuario_grupoOld = persistentUsuario_Grupo.getUsuario_grupo();
-            Usuario usuario_grupoNew = usuario_Grupo.getUsuario_grupo();
-            Grupo grupo_usuarioOld = persistentUsuario_Grupo.getGrupo_usuario();
-            Grupo grupo_usuarioNew = usuario_Grupo.getGrupo_usuario();
-            if (usuario_grupoNew != null) {
-                usuario_grupoNew = em.getReference(usuario_grupoNew.getClass(), usuario_grupoNew.getUsuarioID());
-                usuario_Grupo.setUsuario_grupo(usuario_grupoNew);
+            Usuario usuarioOld = persistentUsuario_Grupo.getUsuario();
+            Usuario usuarioNew = usuario_Grupo.getUsuario();
+            Grupo grupoOld = persistentUsuario_Grupo.getGrupo();
+            Grupo grupoNew = usuario_Grupo.getGrupo();
+            if (usuarioNew != null) {
+                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getUsuarioID());
+                usuario_Grupo.setUsuario(usuarioNew);
             }
-            if (grupo_usuarioNew != null) {
-                grupo_usuarioNew = em.getReference(grupo_usuarioNew.getClass(), grupo_usuarioNew.getGrupoID());
-                usuario_Grupo.setGrupo_usuario(grupo_usuarioNew);
+            if (grupoNew != null) {
+                grupoNew = em.getReference(grupoNew.getClass(), grupoNew.getGrupoID());
+                usuario_Grupo.setGrupo(grupoNew);
             }
             usuario_Grupo = em.merge(usuario_Grupo);
-            if (usuario_grupoOld != null && !usuario_grupoOld.equals(usuario_grupoNew)) {
-                usuario_grupoOld.getListaUsuarioGrupo().remove(usuario_Grupo);
-                usuario_grupoOld = em.merge(usuario_grupoOld);
+            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
+                usuarioOld.getGrupos().remove(usuario_Grupo);
+                usuarioOld = em.merge(usuarioOld);
             }
-            if (usuario_grupoNew != null && !usuario_grupoNew.equals(usuario_grupoOld)) {
-                usuario_grupoNew.getListaUsuarioGrupo().add(usuario_Grupo);
-                usuario_grupoNew = em.merge(usuario_grupoNew);
+            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
+                usuarioNew.getGrupos().add(usuario_Grupo);
+                usuarioNew = em.merge(usuarioNew);
             }
-            if (grupo_usuarioOld != null && !grupo_usuarioOld.equals(grupo_usuarioNew)) {
-                grupo_usuarioOld.getListaGrupoUsuario().remove(usuario_Grupo);
-                grupo_usuarioOld = em.merge(grupo_usuarioOld);
+            if (grupoOld != null && !grupoOld.equals(grupoNew)) {
+                grupoOld.getMiembros().remove(usuario_Grupo);
+                grupoOld = em.merge(grupoOld);
             }
-            if (grupo_usuarioNew != null && !grupo_usuarioNew.equals(grupo_usuarioOld)) {
-                grupo_usuarioNew.getListaGrupoUsuario().add(usuario_Grupo);
-                grupo_usuarioNew = em.merge(grupo_usuarioNew);
+            if (grupoNew != null && !grupoNew.equals(grupoOld)) {
+                grupoNew.getMiembros().add(usuario_Grupo);
+                grupoNew = em.merge(grupoNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                long id = usuario_Grupo.getUsuarioGrupoID();
+                Long id = usuario_Grupo.getUsuarioGrupoID();
                 if (findUsuario_Grupo(id) == null) {
                     throw new NonexistentEntityException("The usuario_Grupo with id " + id + " no longer exists.");
                 }
@@ -102,30 +106,62 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         }
     }
 
-    public void destroy(long id) throws NonexistentEntityException {
+    public void destroy(Long id) throws NonexistentEntityException {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Usuario_Grupo usuario_Grupo;
+            Usuario_Grupo usuarioGrupo;
             try {
-                usuario_Grupo = em.getReference(Usuario_Grupo.class, id);
-                usuario_Grupo.getUsuarioGrupoID();
+                usuarioGrupo = em.getReference(Usuario_Grupo.class, id);
+                usuarioGrupo.getUsuarioGrupoID();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The usuario_Grupo with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("La relación Usuario_Grupo con id " + id + " ya no existe.", enfe);
             }
-            Usuario usuario_grupo = usuario_Grupo.getUsuario_grupo();
-            if (usuario_grupo != null) {
-                usuario_grupo.getListaUsuarioGrupo().remove(usuario_Grupo);
-                usuario_grupo = em.merge(usuario_grupo);
+
+            Usuario usuario = usuarioGrupo.getUsuario();
+            Grupo grupo = usuarioGrupo.getGrupo();
+
+            if (usuario != null && grupo != null) {
+
+                for (Publicacion pub : new HashSet<>(usuario.getPublicaciones())) {
+                    if (grupo.equals(pub.getGrupo())) {
+
+                        for (Comentario com : new HashSet<>(pub.getComentarios())) {
+                            em.remove(em.contains(com) ? com : em.merge(com));
+                        }
+
+                        for (Likes like : new HashSet<>(pub.getLikes())) {
+                            em.remove(em.contains(like) ? like : em.merge(like));
+                        }
+
+                        em.remove(em.contains(pub) ? pub : em.merge(pub));
+                    }
+                }
+
+                for (Comentario com : new HashSet<>(usuario.getComentarios())) {
+                    Publicacion pub = com.getPublicacion();
+                    if (pub != null && grupo.equals(pub.getGrupo())) {
+                        em.remove(em.contains(com) ? com : em.merge(com));
+                    }
+                }
+
+                for (Likes like : new HashSet<>(usuario.getLikes())) {
+                    Publicacion pub = like.getPublicacion();
+                    if (pub != null && grupo.equals(pub.getGrupo())) {
+                        em.remove(em.contains(like) ? like : em.merge(like));
+                    }
+                }
+
+                usuario.getGrupos().remove(usuarioGrupo);
+                grupo.getMiembros().remove(usuarioGrupo);
+                em.merge(usuario);
+                em.merge(grupo);
             }
-            Grupo grupo_usuario = usuario_Grupo.getGrupo_usuario();
-            if (grupo_usuario != null) {
-                grupo_usuario.getListaGrupoUsuario().remove(usuario_Grupo);
-                grupo_usuario = em.merge(grupo_usuario);
-            }
-            em.remove(usuario_Grupo);
+
+            em.remove(em.contains(usuarioGrupo) ? usuarioGrupo : em.merge(usuarioGrupo));
             em.getTransaction().commit();
+
         } finally {
             if (em != null) {
                 em.close();
@@ -157,7 +193,7 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         }
     }
 
-    public Usuario_Grupo findUsuario_Grupo(long id) {
+    public Usuario_Grupo findUsuario_Grupo(Long id) {
         EntityManager em = getEntityManager();
         try {
             return em.find(Usuario_Grupo.class, id);
@@ -184,8 +220,8 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         try {
             return em.createQuery(
                     "SELECT ug FROM Usuario_Grupo ug "
-                    + "WHERE ug.usuario_grupo.usuarioID = :uid "
-                    + "  AND ug.grupo_usuario.grupoID   = :gid",
+                    + "WHERE ug.usuario.usuarioID = :uid "
+                    + "  AND ug.grupo.grupoID   = :gid",
                     Usuario_Grupo.class)
                     .setParameter("uid", uid)
                     .setParameter("gid", gid)
@@ -202,7 +238,7 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         try {
             return em.createQuery(
                     "SELECT ug FROM Usuario_Grupo ug "
-                    + "WHERE ug.usuario_grupo.usuarioID = :uid",
+                    + "WHERE ug.usuario.usuarioID = :uid",
                     Usuario_Grupo.class)
                     .setParameter("uid", uid)
                     .getResultList();
@@ -215,8 +251,7 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         var em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT ug FROM Usuario_Grupo ug "
-                    + "WHERE ug.grupo_usuario.grupoID = :gid",
+                    "SELECT ug FROM Usuario_Grupo ug WHERE ug.grupo.grupoID = :gid",
                     Usuario_Grupo.class)
                     .setParameter("gid", gid)
                     .getResultList();
@@ -225,11 +260,11 @@ public class Usuario_GrupoJpaController extends AbstractJpaController implements
         }
     }
 
-    public long countByUsuario(Long userId) {
+    public Long countByUsuario(Long userId) {
         var em = getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT COUNT(ug) FROM Usuario_Grupo ug WHERE ug.usuario_grupo.usuarioID = :uid",
+                    "SELECT COUNT(ug) FROM Usuario_Grupo ug WHERE ug.usuario.usuarioID = :uid",
                     Long.class)
                     .setParameter("uid", userId)
                     .getSingleResult();
