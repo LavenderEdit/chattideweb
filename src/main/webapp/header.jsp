@@ -17,7 +17,7 @@
         <title>Chattide</title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/Logos/Logo-Chattide-FondoClaro.ico"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/bootstrap/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css?v=2">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/main-style.css?v=3">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
@@ -32,16 +32,22 @@
                     window.location.reload();
                 }
             });
+            (function () {
+                const theme = localStorage.getItem('chattide-theme') || 'light';
+                if (theme === 'dark')
+                    document.body.classList.add('theme-dark');
+                if (theme === 'orange')
+                    document.body.classList.add('theme-orange');
+            })();
         </script>
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top border-bottom">
             <div class="container">
-                <!-- Marca más destacada -->
+
                 <a class="navbar-brand fw-bold fs-3 text-primary" 
                    href="${pageContext.request.contextPath}/index.jsp">
                     Chattide
                 </a>
 
-                <!-- Toggler con más padding -->
                 <button class="navbar-toggler p-2" type="button"
                         data-bs-toggle="collapse" data-bs-target="#mainNav"
                         aria-controls="mainNav" aria-expanded="false"
@@ -52,7 +58,18 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <ul class="navbar-nav ms-auto align-items-center gap-3">
 
-                        <!-- Estado anónimo -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle px-3 py-2 rounded" href="#" id="themeDropdown"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-adjust"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+                                <li><button class="dropdown-item" data-theme="light">Light Mode</button></li>
+                                <li><button class="dropdown-item" data-theme="dark">Dark Mode</button></li>
+                                <li><button class="dropdown-item" data-theme="orange">Orange Dark</button></li>
+                            </ul>
+                        </li>
+
                         <c:if test="${empty sessionScope.usuario}">
                             <li class="nav-item">
                                 <a class="nav-link px-3 py-2 rounded" 
@@ -68,9 +85,7 @@
                             </li>
                         </c:if>
 
-                        <!-- Usuario autenticado -->
                         <c:if test="${not empty sessionScope.usuario}">
-                            <!-- Dropdown Grupos -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle px-3 py-2 rounded" href="#" 
                                    id="groupsDropdown" role="button" data-bs-toggle="dropdown"
@@ -99,7 +114,6 @@
                                 </ul>
                             </li>
 
-                            <!-- Dropdown usuario -->
                             <c:set var="user" value="${sessionScope.usuario}" />
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle d-flex align-items-center px-3 py-2 rounded" href="#" 
@@ -114,7 +128,7 @@
                                                  alt="Avatar" class="rounded-circle me-2 avatar-bg"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    <span class="fw-medium text-dark">${user.nombre}</span>
+                                    <span class="fw-medium">${user.nombre}</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
                                     <li>
