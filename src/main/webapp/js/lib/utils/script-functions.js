@@ -48,7 +48,6 @@ export function checkArchiveSizeAndType() {
                 return;
             }
 
-            // Ejemplo de confirmación, si quieres pedir “¿Subir este archivo?”
             openConfirmModal({
                 title: 'Subir archivo',
                 message: `¿Deseas subir “${file.name}” (${(file.size / 1024).toFixed(1)} KB)?`,
@@ -60,3 +59,35 @@ export function checkArchiveSizeAndType() {
         });
     });
 }
+
+
+export function injectHeroBackground(imageUrl, { overlayOpacity = 0.5, fixed = true } = {}) {
+    const body = document.body;
+    body.style.minHeight = '100vh';
+    body.style.margin = '0';
+
+    body.style.backgroundImage = `url(${imageUrl})`;
+    body.style.backgroundSize = 'cover';
+    body.style.backgroundPosition = 'center center';
+    body.style.backgroundRepeat = 'no-repeat';
+    if (fixed)
+        body.style.backgroundAttachment = 'fixed';
+
+    let overlay = document.getElementById('hero-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'hero-overlay';
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: '-1'
+        });
+        document.body.appendChild(overlay);
+    }
+    overlay.style.backgroundColor = `rgba(0, 0, 0, ${overlayOpacity})`;
+}
+
