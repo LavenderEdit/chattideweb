@@ -28,6 +28,38 @@
         <servlet-name>SvPublicar</servlet-name>
         <servlet-class>com.chattide.web.Servlet.PubCom.SvPublicar</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SvMiCuenta</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.AuthUser.SvMiCuenta</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvUnirseGrupo</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.GestGrup.SvUnirseGrupo</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvComentario</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvComentario</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvLike</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvLike</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvLikeCount</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvLikeCount</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvMiGrupo</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvMiGrupo</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvPerfil</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvPerfil</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvPublicacion</servlet-name>
+        <servlet-class>com.chattide.web.Servlet.PubCom.SvPublicacion</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SvRegistro</servlet-name>
         <url-pattern>/SvRegistro</url-pattern>
@@ -55,6 +87,38 @@
     <servlet-mapping>
         <servlet-name>SvPublicar</servlet-name>
         <url-pattern>/SvPublicar</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvMiCuenta</servlet-name>
+        <url-pattern>/SvMiCuenta</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvUnirseGrupo</servlet-name>
+        <url-pattern>/SvUnirseGrupo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvComentario</servlet-name>
+        <url-pattern>/SvComentario</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvLike</servlet-name>
+        <url-pattern>/SvLike</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvLikeCount</servlet-name>
+        <url-pattern>/SvLikeCount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvMiGrupo</servlet-name>
+        <url-pattern>/SvMiGrupo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvPerfil</servlet-name>
+        <url-pattern>/SvPerfil</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvPublicacion</servlet-name>
+        <url-pattern>/SvPublicacion</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
