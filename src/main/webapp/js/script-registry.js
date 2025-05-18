@@ -1,4 +1,4 @@
-import { togglePasswordVisibility, checkArchiveSizeAndType } from './lib/utils/script-functions.js?v=1';
+import { togglePasswordVisibility, checkArchiveSizeAndType, injectHeroBackground } from './lib/utils/script-functions.js?v=2';
 import UsuarioController from './controllers/usuario-controller.js?v=1';
 import { initExitGroupButtons, initCreateGroupForm }     from './controllers/grupo-controller.js';
 import PublicacionController        from './controllers/publicacion-controller.js?v=1';
@@ -14,16 +14,20 @@ export function runComponentRegistry() {
     const pageName = getPageName();
 
     switch (pageName) {
+        case 'index.jsp':
+            injectHeroBackground(
+                    `${window.APP_CONTEXT_PATH}/images/Recursos/hero-bg.jpg`,
+                    {overlayOpacity: 0.4, fixed: true}
+            );
+            break;
         case 'registro.jsp':
             togglePasswordVisibility();
             checkArchiveSizeAndType();
             break;
-
         case 'login.jsp':
             UsuarioController.init();
             togglePasswordVisibility();
             break;
-
         case 'miGrupo.jsp':
         case 'SvMiGrupo':
             initExitGroupButtons();
@@ -32,18 +36,15 @@ export function runComponentRegistry() {
             if (gid)
                 PublicacionController.init(gid);
             break;
-
         case 'misGrupos.jsp':
         case 'SvMisGrupos':
             initExitGroupButtons();
             break;
-
         case 'miCuenta.jsp':
         case 'SvMiCuenta':
             checkArchiveSizeAndType();
             UsuarioController.init();
             break;
-
         case 'publicacion.jsp':
         case 'SvPublicacion':
             const pid = new URLSearchParams(window.location.search).get('id');
@@ -52,10 +53,22 @@ export function runComponentRegistry() {
                 initLikeButtons();
             }
             break;
+        case 'buscarGrupos.jsp':
+        case 'SvBuscarGrupos':
+            // Nada
+            break;
+        case 'perfil.jsp':
+        case 'SvPerfil':
+            // Nada
+            break;
         case 'crearGrupo.jsp':
             initCreateGroupForm();
             break;
         default:
-        // nada
+            injectHeroBackground(
+                    `${window.APP_CONTEXT_PATH}/images/Recursos/hero-bg.jpg`,
+                    {overlayOpacity: 0.4, fixed: true}
+            );
+            break;
     }
 }
