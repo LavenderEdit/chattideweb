@@ -28,12 +28,12 @@ public class Mensajes {
     public static final String USUARIO_DATOS_MODIFICADOS = "¡Los datos han sido modificados con éxito!";
     public static final String USUARIO_DATOS_DUPLICADOS = "No se han detectado cambios en los datos ingresados.";
 
-// Mensajes de creación/eliminación de grupo
+    // Mensajes de creación/eliminación de grupo
     public static final String GRUPO_CREADO = "Grupo creado exitosamente";
     public static final String GRUPO_ELIMINADO = "Grupo eliminado correctamente";
     public static final String GRUPO_ACTUALIZADO = "Grupo actualizado con éxito";
 
-// Mensajes de membresía
+    // Mensajes de membresía
     public static final String USUARIO_AGREGADO = "Usuario agregado al grupo";
     public static final String USUARIO_ELIMINADO = "Usuario eliminado del grupo";
     public static final String USUARIO_PROMOVIDO = "Usuario promovido a administrador";
