@@ -27,8 +27,8 @@
                     </c:otherwise>
                 </c:choose>
 
-                <h3 class="fw-bold mb-2">${usuarioPerfil.nombre}</h3>
-                <p class="text-muted mb-4">${usuarioPerfil.email}</p>
+                <h3 class="fw-bold text-secondary mb-2">${usuarioPerfil.nombre}</h3>
+                <p class="text-secondary mb-4">${usuarioPerfil.email}</p>
 
                 <ul class="list-group list-group-flush w-100">
                     <li class="list-group-item d-flex justify-content-between align-items-center py-3">
@@ -45,8 +45,8 @@
 
         <div class="col-md-8">
             <div class="card shadow-sm border-0 p-4">
-                <h4 class="fw-bold mb-3">Bienvenido al perfil de ${usuarioPerfil.nombre}</h4>
-                <p class="text-muted lead">
+                <h4 class="fw-bold text-secondary mb-3">Bienvenido al perfil de ${usuarioPerfil.nombre}</h4>
+                <p class="text-secondary lead">
                     Explora la actividad, información y más detalles de este perfil.
                 </p>
             </div>

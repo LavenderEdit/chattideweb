@@ -13,7 +13,7 @@
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">${grupo.nombre}</h5>
-                    <p class="card-text">${grupo.descripcion}</p>
+                    <p class="card-text text-secondary">${grupo.descripcion}</p>
                     <a href="${pageContext.request.contextPath}/SvUnirseGrupo?id=${grupo.id}" class="btn btn-primary">Unirse</a>
                 </div>
             </div>

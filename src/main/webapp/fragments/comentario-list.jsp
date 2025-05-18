@@ -36,7 +36,7 @@
                 </div>
                 <div class="flex-grow-1">
                     <strong>${c.usuarioNombre}</strong>
-                    <span class="text-muted small">
+                    <span class="text-secondary small">
                         &bull;
                         <fmt:formatDate value="${c.fechaComentario}" pattern="dd/MM/yyyy HH:mm"/>
                     </span>

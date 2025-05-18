@@ -10,8 +10,8 @@
 
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
-                <p class="fs-5">${publicacion.contenido}</p>
-                <div class="text-muted small mb-2">
+                <p class="fs-5 text-secondary">${publicacion.contenido}</p>
+                <div class="text-secondary small mb-2">
                     Publicado por 
                     <a href="${pageContext.request.contextPath}/SvPerfil?userId=${publicacion.autorId}">
                         ${publicacion.autorNombre}

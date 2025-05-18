@@ -10,8 +10,8 @@
 <c:forEach var="pub" items="${listaPublicaciones}">
     <div class="card mb-3">
         <div class="card-body">
-            <p>${pub.contenido}</p>
-            <small class="text-muted">
+            <p class="text-secondary">${pub.contenido}</p>
+            <small class="text-secondary">
                 Publicado por 
                 <a href="${pageContext.request.contextPath}/SvPerfil?userId=${pub.autorId}">
                     ${pub.autorNombre}

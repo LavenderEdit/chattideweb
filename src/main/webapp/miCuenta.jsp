@@ -9,7 +9,7 @@
     <div class="row g-4">
         <div class="col-md-4">
             <div class="card shadow-sm border-0 p-4 text-center">
-                <h2 class="fw-bold mb-4">Mi Cuenta</h2>
+                <h2 class="fw-bold mb-4 text-secondary">Mi Cuenta</h2>
                 <c:set var="user" value="${sessionScope.usuarioDTO}"/>
                 <c:choose>
                     <c:when test="${not empty user.avatar}">
@@ -26,31 +26,31 @@
                     </c:otherwise>
                 </c:choose>
 
-                <p class="mb-2"><strong>Nombre:</strong> ${user.nombre}</p>
-                <p class="text-muted"><strong>Email:</strong> ${user.email}</p>
+                <p class="text-secondary mb-2"><strong>Nombre:</strong> ${user.nombre}</p>
+                <p class="text-secondary"><strong>Email:</strong> ${user.email}</p>
             </div>
         </div>
 
         <div class="col-md-8">
             <div class="card shadow-sm border-0 p-4">
-                <h3 class="fw-bold mb-4">Editar Perfil</h3>
+                <h3 class="fw-bold mb-4 text-secondary">Editar Perfil</h3>
                 <form id="form-user"
                       enctype="multipart/form-data"
                       class="mt-3">
                     <div class="mb-4">
-                        <label for="nombre" class="form-label fw-semibold">Nombre</label>
+                        <label for="nombre" class="form-label text-secondary fw-semibold">Nombre</label>
                         <input type="text" id="nombre" name="nombre"
                                value="${user.nombre}"
                                class="form-control rounded-3" required/>
                     </div>
                     <div class="mb-4">
-                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <label for="email" class="form-label text-secondary fw-semibold">Email</label>
                         <input type="email" id="email" name="email"
                                value="${user.email}"
                                class="form-control rounded-3" required/>
                     </div>
                     <div class="mb-4">
-                        <label for="avatar" class="form-label fw-semibold">Avatar</label>
+                        <label for="avatar" class="form-label text-secondary fw-semibold">Avatar</label>
                         <input type="file" id="avatar" name="avatar"
                                class="form-control rounded-3 check-file"/>
                     </div>
