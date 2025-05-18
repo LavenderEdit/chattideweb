@@ -1,0 +1,208 @@
+/* 
+    Created on : 17 may. 2025, 19:27:10
+    Updated on : 25 jun. 2025, 20:00:00
+    Author     : Juan - Luis
+*/
+
+:root {
+    --clr-background: #ffffff;
+    --clr-text: #212529;
+    --clr-primary: #0d6efd;
+    --clr-secondary-bg: #f8f9fa;
+    --clr-link: #0d6efd;
+
+    --clr-navbar-bg: #ffffff;
+    --clr-navbar-text: #212529;
+
+    --clr-card-bg: #ffffff;
+    --clr-card-border: rgba(0, 0, 0, 0.125);
+
+    --clr-input-bg: #f8f9fa;
+    --clr-input-border: #ced4da;
+
+    --clr-text-secondary: #6c757d;
+}
+
+body.theme-dark {
+    --clr-background: #121212;
+    --clr-text: #e0e0e0;
+    --clr-primary: #bb86fc;
+    --clr-secondary-bg: #1a1a1a;
+    --clr-link: #bb86fc;
+
+    --clr-navbar-bg: #1f1f1f;
+    --clr-navbar-text: #e0e0e0;
+
+    --clr-card-bg: rgba(30, 30, 30, 0.9);
+    --clr-card-border: rgba(255, 255, 255, 0.1);
+
+    --clr-input-bg: #2a2a2a;
+    --clr-input-border: #444;
+
+    --clr-text-secondary: #a0a0a0;
+}
+
+body.theme-orange {
+    --clr-background: #2b1b0f;
+    --clr-text: #f5e9dc;
+    --clr-primary: #ff8c42;
+    --clr-secondary-bg: #3a2a20;
+    --clr-link: #ffb27c;
+
+    --clr-navbar-bg: #3e2a19;
+    --clr-navbar-text: #f5e9dc;
+
+    --clr-card-bg: rgba(58, 42, 32, 0.9);
+    --clr-card-border: rgba(255, 140, 66, 0.2);
+
+    --clr-input-bg: #473729;
+    --clr-input-border: #665;
+
+    --clr-text-secondary: #d4b89c;
+}
+
+body {
+    background-color: var(--clr-background) !important;
+    color: var(--clr-text) !important;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link, .dropdown-item {
+    color: var(--clr-link) !important;
+    transition: color 0.2s ease;
+}
+
+a:hover, .nav-link:hover, .dropdown-item:hover {
+    color: var(--clr-primary) !important;
+    opacity: 0.9;
+}
+
+.navbar {
+    background-color: var(--clr-navbar-bg) !important;
+    border-bottom: 1px solid var(--clr-card-border);
+}
+
+.navbar-brand, .navbar .nav-link {
+    color: var(--clr-navbar-text) !important;
+}
+
+.dropdown-menu {
+    background-color: var(--clr-card-bg) !important;
+    border: 1px solid var(--clr-card-border);
+}
+
+.card {
+    background-color: var(--clr-card-bg) !important;
+    border: 1px solid var(--clr-card-border) !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.text-muted {
+    color: var(--clr-text-secondary) !important; 
+}
+
+.card-title {
+    color: var(--clr-primary) !important;
+}
+
+.form-control, .form-select, textarea.form-control {
+    background-color: var(--clr-input-bg) !important;
+    color: var(--clr-text) !important;
+    border: 1px solid var(--clr-input-border) !important;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--clr-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--clr-primary-rgb), 0.25);
+}
+
+/* ========== Componentes Específicos ========== */
+/* Avatar (miCuenta.jsp, miGrupo.jsp) */
+.avatar-bg {
+    background-color: var(--clr-secondary-bg);
+    border: 2px solid var(--clr-primary);
+}
+
+/* Botones de Grupo (buscarGrupos.jsp) */
+.btn-join-group {
+    background-color: var(--clr-primary) !important;
+    border: none;
+}
+
+.btn-join-group:hover {
+    opacity: 0.85;
+}
+
+/* Publicaciones (miGrupo.jsp) */
+#publicaciones-container {
+    background-color: var(--clr-secondary-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+/* Lista de Miembros (miGrupo.jsp) */
+.list-group-item {
+    background-color: var(--clr-card-bg) !important;
+    border-color: var(--clr-card-border) !important;
+    color: var(--clr-text) !important;
+}
+
+/* Overlay Hero (index.jsp) */
+.hero::before {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* ========== Componentes Adicionales ========== */
+/* Perfil (perfil.jsp) */
+.profile-stats .list-group-item {
+    background-color: var(--clr-card-bg) !important;
+    border-color: var(--clr-card-border) !important;
+    color: var(--clr-text) !important;
+}
+
+.profile-stats .badge {
+    background-color: var(--clr-primary) !important;
+    color: var(--clr-background) !important;
+}
+
+/* Tarjeta de Publicación (publicacion.jsp) */
+.publicacion-card {
+    background-color: var(--clr-card-bg) !important;
+    border: 1px solid var(--clr-card-border) !important;
+}
+
+.publicacion-card .text-muted {
+    color: var(--clr-text-secondary) !important;
+    opacity: 0.8;
+}
+
+/* Botón de Like */
+.like-btn {
+    background-color: transparent !important;
+    border: 1px solid var(--clr-primary) !important;
+    color: var(--clr-primary) !important;
+    transition: all 0.2s ease;
+}
+
+.like-btn.liked {
+    background-color: var(--clr-primary) !important;
+    color: var(--clr-background) !important;
+}
+
+.like-btn:hover {
+    opacity: 0.85;
+}
+
+/* Comentarios */
+#comentarios-container {
+    background-color: var(--clr-secondary-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--clr-card-border);
+}
+
+.comentario-item {
+    background-color: var(--clr-card-bg) !important;
+    border-color: var(--clr-card-border) !important;
+}
