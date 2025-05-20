@@ -78,7 +78,7 @@ body {
     transition: color 0.2s ease;
 }
 
-a:hover, .nav-link:hover, .dropdown-item:hover {
+a:not(.btn):hover, .nav-link:not(.btn):hover, .dropdown-item:hover {
     color: var(--clr-primary) !important;
     opacity: 0.9;
 }
@@ -90,6 +90,11 @@ a:hover, .nav-link:hover, .dropdown-item:hover {
 
 .navbar-brand, .navbar .nav-link {
     color: var(--clr-navbar-text) !important;
+}
+
+.navbar-brand:hover {
+    opacity: 1 !important;
+    color: var(--clr-navbar-text) !important; /* Mantiene el color original */
 }
 
 .dropdown-menu {
