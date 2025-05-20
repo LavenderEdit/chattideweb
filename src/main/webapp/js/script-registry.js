@@ -1,4 +1,4 @@
-import { togglePasswordVisibility, checkArchiveSizeAndType, injectHeroBackground } from './lib/utils/script-functions.js?v=2';
+import { togglePasswordVisibility, checkArchiveSizeAndType, injectHeroBackground, valideEmail} from './lib/utils/script-functions.js?v=2';
 import UsuarioController from './controllers/usuario-controller.js?v=1';
 import { initExitGroupButtons, initCreateGroupForm }     from './controllers/grupo-controller.js';
 import PublicacionController        from './controllers/publicacion-controller.js?v=1';
@@ -23,10 +23,12 @@ export function runComponentRegistry() {
         case 'registro.jsp':
             togglePasswordVisibility();
             checkArchiveSizeAndType();
+            valideEmail();
             break;
         case 'login.jsp':
             UsuarioController.init();
             togglePasswordVisibility();
+            valideEmail();
             break;
         case 'miGrupo.jsp':
         case 'SvMiGrupo':
