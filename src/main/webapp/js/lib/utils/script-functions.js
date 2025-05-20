@@ -91,3 +91,40 @@ export function injectHeroBackground(imageUrl, { overlayOpacity = 0.5, fixed = t
     overlay.style.backgroundColor = `rgba(0, 0, 0, ${overlayOpacity})`;
 }
 
+export function valideEmail() {
+    const emailInput = document.getElementById("email");
+    const result = document.getElementById("result");
+    const icon = document.getElementById("icon");
+
+    const regex = /^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/;
+
+
+    function validateEmailLive() {
+        const email = emailInput.value.trim();
+
+        if (email === "") {
+            emailInput.classList.remove("valid", "invalid");
+            icon.textContent = "";
+            result.textContent = "";
+            return;
+        }
+
+        if (regex.test(email)) {
+            emailInput.classList.add("valid");
+            emailInput.classList.remove("invalid");
+            icon.textContent = "✅";
+            icon.style.color = "#4caf50";
+            result.textContent = "Correo válido";
+            result.style.color = "lightgreen";
+        } else {
+            emailInput.classList.add("invalid");
+            emailInput.classList.remove("valid");
+            icon.textContent = "❌";
+            icon.style.color = "tomato";
+            result.textContent = "Correo inválido";
+            result.style.color = "tomato";
+        }
+    }
+
+    emailInput.addEventListener("input", validateEmailLive);
+}
