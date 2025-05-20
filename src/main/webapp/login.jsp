@@ -17,7 +17,18 @@
         <form id="form-log">
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" autocomplete="on" name="email" placeholder="tuemail@ejemplo.com" required>
+                <div class="input-wrapper">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="Ingresa tu correo"
+                        required
+                        >
+                    <span id="icon"></span>
+                </div>
+                <p id="result" class="mt-1"></p>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
