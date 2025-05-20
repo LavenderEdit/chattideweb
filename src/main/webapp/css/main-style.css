@@ -48,3 +48,33 @@
         transform: translate(-50%, -50%) rotate(359deg)
     }
 }
+
+/* ===== Ajustes para el validador de correo ===== */
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.input-wrapper input {
+    padding-right: 2.5rem;
+}
+
+.input-wrapper #icon {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+input.valid {
+    border-color: #4caf50 !important;
+    box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+input.invalid {
+    border-color: tomato !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 99, 71, 0.25);
+}
