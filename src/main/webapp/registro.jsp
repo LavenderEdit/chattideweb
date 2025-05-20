@@ -17,16 +17,16 @@
         <form action="/ChattideWeb/SvRegistro" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="tunombre" required>
             </div>
             <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" placeholder="ejemplo@gmail.com" required>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña"
+                    <input type="password" class="form-control" id="password" name="password" placeholder="contraseña"
                            minlength="8" maxlength="16" required>
                     <button type="button" class="btn btn-outline-secondary toggle-password">
                         <i class="fas fa-eye"></i>
