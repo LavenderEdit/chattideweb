@@ -21,6 +21,8 @@
     --clr-input-border: #ced4da;
 
     --clr-text-secondary: #6c757d;
+    
+    --btn-close-filter: invert(0);
 }
 
 body.theme-dark {
@@ -40,6 +42,8 @@ body.theme-dark {
     --clr-input-border: #444;
 
     --clr-text-secondary: #a0a0a0;
+    
+     --btn-close-filter: invert(1);
 }
 
 body.theme-orange {
@@ -59,6 +63,8 @@ body.theme-orange {
     --clr-input-border: #665;
 
     --clr-text-secondary: #d4b89c;
+    
+    --btn-close-filter: invert(0.8);
 }
 
 body {
@@ -205,4 +211,51 @@ a:hover, .nav-link:hover, .dropdown-item:hover {
 .comentario-item {
     background-color: var(--clr-card-bg) !important;
     border-color: var(--clr-card-border) !important;
+}
+
+/* ========== Modal Styles ========== */
+.modal-content {
+    background-color: var(--clr-card-bg) !important;
+    border: 1px solid var(--clr-card-border) !important;
+    color: var(--clr-text) !important;
+}
+
+.modal-header {
+    border-bottom-color: var(--clr-card-border) !important;
+}
+
+.modal-footer {
+    border-top-color: var(--clr-card-border) !important;
+}
+
+.modal-title {
+    color: var(--clr-text) !important;
+}
+
+.btn-close {
+    filter: var(--btn-close-filter);
+}
+
+/* Botones del modal */
+.btn-secondary {
+    background-color: var(--clr-secondary-bg) !important;
+    color: var(--clr-text) !important;
+    border-color: var(--clr-card-border) !important;
+}
+
+.btn-primary {
+    background-color: var(--clr-primary) !important;
+    border-color: var(--clr-primary) !important;
+    color: var(--clr-background) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--clr-primary) !important;
+    opacity: 0.9;
+}
+
+/* Filtro para el botón de cerrar en temas oscuros */
+body.theme-dark .btn-close,
+body.theme-orange .btn-close {
+    filter: invert(1);
 }
