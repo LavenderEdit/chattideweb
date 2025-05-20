@@ -120,7 +120,10 @@ a:hover, .nav-link:hover, .dropdown-item:hover {
 
 .form-control:focus, .form-select:focus {
     border-color: var(--clr-primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(var(--clr-primary-rgb), 0.25);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    background-color: var(--clr-input-bg) !important;
+    color: var(--clr-text) !important;
+    outline: none;
 }
 
 /* ========== Componentes Específicos ========== */
