@@ -22,7 +22,7 @@
             <div class="mb-3">
                 <label for="password" class="form-label">Contraseña:</label>
                 <div class="input-group">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña"
+                    <input type="password" class="form-control" id="password" name="password" placeholder="contraseña"
                            minlength="8" maxlength="16" required>
                     <button type="button" class="btn btn-outline-secondary toggle-password">
                         <i class="fas fa-eye"></i>
