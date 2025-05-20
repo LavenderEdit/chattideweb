@@ -4,7 +4,7 @@
 */
 
 @import url('./style-margin-adjuster.css');
-@import url('./themes.css');
+@import url('./themes.css?v=1');
 
 .avatar-bg {
     width: 40px;
