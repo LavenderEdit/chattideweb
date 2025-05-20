@@ -46,6 +46,7 @@ export function runComponentRegistry() {
         case 'SvMiCuenta':
             checkArchiveSizeAndType();
             UsuarioController.init();
+            valideEmail();
             break;
         case 'publicacion.jsp':
         case 'SvPublicacion':
