@@ -64,9 +64,9 @@
                                 <i class="fas fa-adjust"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
-                                <li><button class="dropdown-item" data-theme="light">Light Mode</button></li>
-                                <li><button class="dropdown-item" data-theme="dark">Dark Mode</button></li>
-                                <li><button class="dropdown-item" data-theme="orange">Orange Dark</button></li>
+                                <li><button class="dropdown-item" data-theme="light">Claro</button></li>
+                                <li><button class="dropdown-item" data-theme="dark">Oscuro</button></li>
+                                <li><button class="dropdown-item" data-theme="orange">Naranja Oscuro</button></li>
                             </ul>
                         </li>
 
