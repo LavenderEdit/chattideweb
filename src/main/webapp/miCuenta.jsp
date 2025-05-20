@@ -45,9 +45,29 @@
                     </div>
                     <div class="mb-4">
                         <label for="email" class="form-label text-secondary fw-semibold">Email</label>
-                        <input type="email" id="email" name="email"
-                               value="${user.email}"
-                               class="form-control rounded-3" required/>
+                        <div class="input-wrapper" style="width: 100%;">
+                            <input
+                                type="text"
+                                id="email"
+                                name="email"
+                                value="${user.email}"
+                                class="form-control rounded-3"
+                                placeholder="actualiza@gmail.com"
+                                required
+                                />
+                            <span
+                                id="icon"
+                                style="
+                                position: absolute;
+                                top: calc(50% + 0.25rem);
+                                right: 1rem;
+                                transform: translateY(-50%);
+                                font-size: 1.2rem;
+                                pointer-events: none;
+                                "
+                                ></span>
+                        </div>
+                        <p id="result" class="mt-1" style="margin-bottom: 0;"></p>
                     </div>
                     <div class="mb-4">
                         <label for="avatar" class="form-label text-secondary fw-semibold">Avatar</label>
