@@ -14,6 +14,7 @@
       <property name="jakarta.persistence.jdbc.user" value="g3Admin"/>
       <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
       <property name="jakarta.persistence.jdbc.password" value="contraseniaSegura_123"/>
+      <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
     </properties>
   </persistence-unit>
 </persistence>
