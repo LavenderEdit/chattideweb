@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy WAR app to Azure Web App - Chattide
+name: Build and deploy WAR app to Azure Web App - chattide
 
 on:
   push:
@@ -13,68 +13,56 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # Required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Java version
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'microsoft'
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Build & rename WAR
+        run: |
+          mvn clean package
+          # Rename WAR to match context path
+          mv target/*.war target/ChattideWeb.war
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: java-app
-          path: '${{ github.workspace }}/target/*.war'
+          name: chattide-wars
+          path: target/ChattideWeb.war
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      name: Production
+      url: ${{ steps.deploy.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write # For OIDC auth
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download WAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: java-app
-      
+          name: chattide-wars
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E5AA5809CF89415E87F7C26A07EE4CDC }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CDE8F44181B241ACBB03DB69E04B5B58 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_00B376E7B3264A6CBF42ED2873070202 }}
-
-      - name: Wait for SCM to stabilize
-        run: sleep 15
-
-      - name: Deploy via Azure CLI
-        uses: azure/cli@v2
-        with:
-          inlineScript: |
-            az webapp deploy \
-              --resource-group ${{ secrets.AZURE_RG }} \
-              --name chattide \
-              --src-path target/ChattideWeb.war \
-              --type war \
-              --async true
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+        id: deploy
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'Chattide'
-          slot-name: 'Production'
-          package: '*.war'
-          
+          app-name: chattide
+          slot-name: Production
+          package: target/ChattideWeb.war
