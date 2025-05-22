@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -24,14 +24,17 @@ jobs:
           java-version: '11'
           distribution: 'microsoft'
 
-      - name: Build with Maven
-        run: mvn clean install
+      - name: Build & rename WAR
+        run: |
+          mvn clean install
+          # Rename the WAR so Azure deploys under /ChattideWeb
+          mv target/*.war target/ChattideWeb.war
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.war'
+          path: '${{ github.workspace }}/target/ChattideWeb.war'
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,5 +65,4 @@ jobs:
         with:
           app-name: 'Chattide'
           slot-name: 'Production'
-          package: '*.war'
-          
+          package: '${{ github.workspace }}/target/ChattideWeb.war'
