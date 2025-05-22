@@ -56,6 +56,20 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_CDE8F44181B241ACBB03DB69E04B5B58 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_00B376E7B3264A6CBF42ED2873070202 }}
 
+      - name: Wait for SCM to stabilize
+        run: sleep 15
+
+      - name: Deploy via Azure CLI
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az webapp deploy \
+              --resource-group ${{ secrets.AZURE_RG }} \
+              --name chattide \
+              --src-path target/ChattideWeb.war \
+              --type war \
+              --async true
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
